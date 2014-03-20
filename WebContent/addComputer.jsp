@@ -2,35 +2,41 @@
 <section id="main">
 
 	<h1>Add Computer</h1>
-	
-	<form action="addComputer.jsp" method="POST">
+
+	<form action="/computer" method="POST" class="form-horizontal">
 		<fieldset>
-			<div class="clearfix">
-				<label for="name">Computer name:</label>
-				<div class="input">
-					<input type="text" name="name" />
-					<span class="help-inline">Required</span>
+			<div class="form-group">
+				<label for="name" class="col-sm-3 control-label">Computer name:</label>
+				<div class="col-xs-3">
+					<input type="text" class="form-control" name="name" />
+				</div>
+				<div class="col-xs-3">
+					<span class="help-block">Required</span>
 				</div>
 			</div>
-	
-			<div class="clearfix">
-				<label for="introduced">Introduced date:</label>
-				<div class="input">
-					<input type="date" name="introducedDate" pattern="YY-MM-dd"/>
-					<span class="help-inline">YYYY-MM-DD</span>
+
+			<div class="form-group">
+				<label for="introduced" class="col-sm-3 control-label">Introduced date:</label>
+				<div class="col-xs-3">
+					<input type="date" class="form-control" name="introducedDate" pattern="YY-MM-dd" />
+				</div>
+				<div class="col-xs-3">
+					<span class="help-block">YYYY-MM-DD</span>
 				</div>
 			</div>
-			<div class="clearfix">
-				<label for="discontinued">Discontinued date:</label>
-				<div class="input">
-					<input type="date" name="introducedDate" pattern="YY-MM-dd"/>
-					<span class="help-inline">YYYY-MM-DD</span>
+			<div class="form-group">
+				<label for="discontinued" class="col-sm-3 control-label">Discontinued date:</label>
+				<div class="col-xs-3">
+					<input type="date" class="form-control" name="introducedDate" pattern="YY-MM-dd" />
+				</div>
+				<div class="col-xs-3">
+					<span class="help-block">YYYY-MM-DD</span>
 				</div>
 			</div>
-			<div class="clearfix">
-				<label for="company">Company Name:</label>
-				<div class="input">
-					<select name="company">
+			<div class="form-group">
+				<label for="company" class="col-sm-3 control-label">Company Name:</label>
+				<div class="col-xs-3">
+					<select name="company" class="form-control">
 						<option value="0">--</option>
 						<option value="1">Apple</option>
 						<option value="2">Dell</option>
@@ -40,8 +46,9 @@
 			</div>
 		</fieldset>
 		<div class="actions">
-			<input type="submit" value="Add" class="btn primary">
-			or <a href="dashboard.jsp" class="btn">Cancel</a>
+			<button type="button" class="btn btn-primary">Add</button>
+			or
+			<a href="/computer" class="btn btn-default">Cancel</a>
 		</div>
 	</form>
 </section>

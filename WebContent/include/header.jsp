@@ -1,5 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,8 +9,8 @@
 <link href="css/main.css" rel="stylesheet" media="screen">
 </head>
 <body>
-	<header class="topbar">
+	<header class="navbar">
 		<h1 class="fill">
-			<a href="dashboard.jsp"> Application - Computer Database </a>
+			<a href="/ComputerDatabase/computers"> Application - Computer Database </a>
 		</h1>
 	</header>
