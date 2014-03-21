@@ -4,13 +4,18 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.excilys.computerdatabase.domain.Company;
 
 public class CompanyDAO {
-	private static final String DAO_NAME = "company";
+	
+	final Logger logger = LoggerFactory.getLogger(CompanyDAO.class);
+	
 	private static CompanyDAO CompanyDAO;
 
 	private CompanyDAO() {
@@ -25,14 +30,14 @@ public class CompanyDAO {
 	}
 
 	public Company getCompany(int id) {
+		logger.debug("getCompany(" + id + ")");
 		Connection connection = DAOFactory.getConnection();
 		PreparedStatement getCompany = null;
 		ResultSet rs = null;
 		Company p;
 
 		try {
-			getCompany = connection.prepareStatement("SELECT * from " 
-					+ DAO_NAME + " WHERE id = ?");
+			getCompany = connection.prepareStatement("SELECT * from company WHERE id = ?");
 			getCompany.setInt(1, id);
 
 			rs = getCompany.executeQuery();
@@ -41,89 +46,63 @@ public class CompanyDAO {
 			p = new Company();
 			p.setId(rs.getInt("id"));
 			p.setName(rs.getString("name"));
-
+			
+			logger.debug("getCompany(" + id + ") successful");
 			return p;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.debug("getCompany(" + id + ") failed with: " + e.getMessage());
 		} finally {
-			try {
-				if (getCompany != null) {
-					getCompany.close();
-				}
-				if (connection != null) {
-					connection.close();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			DAOFactory.closeObject(connection, rs, getCompany);
 		}
 
 		return null;
 	}
 
-	public Map<Integer, Company> getCompanies() {
+	public List<Company> getCompanies() {
+		logger.debug("getCompanies()");
 		Connection connection = DAOFactory.getConnection();
 
-		PreparedStatement getCompanys = null;
+		PreparedStatement getCompanies = null;
 		ResultSet rs = null;
 
-		Map<Integer, Company> companies = new HashMap<Integer, Company>();
+		List<Company> companies = new ArrayList<Company>();
 		try {
-			getCompanys = connection.prepareStatement("SELECT * from "
-					+ DAO_NAME);
-			rs = getCompanys.executeQuery();
+			getCompanies = connection.prepareStatement("SELECT id, name FROM company");
+			rs = getCompanies.executeQuery();
 
 			while (rs.next()) {
 				Company p = new Company();
 				Integer id = rs.getInt("id");
 				p.setId(id);
 				p.setName(rs.getString("name"));
-				companies.put(id, p);
+				companies.add(p);
 			}
-
+			logger.debug("getCompanies() successful");
 			return companies;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.warn("getCompanies() failed with: " + e.getMessage());
 		} finally {
-			try {
-				if (getCompanys != null) {
-					getCompanys.close();
-				}
-
-				if (connection != null) {
-					connection.close();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			DAOFactory.closeObject(connection, rs, getCompanies);
 		}
 
 		return null;
 	}
 
 	public boolean addCompany(Company p) {
+		logger.debug("addCompany(" + p + ")");
 		PreparedStatement insertCompany = null;
 		Connection connection = DAOFactory.getConnection();
 
 		try {
-			insertCompany = connection.prepareStatement("INSERT INTO "
-					+ DAO_NAME + " values(null,?)");
+			insertCompany = connection.prepareStatement("INSERT INTO company values(null,?)");
 			insertCompany.setString(1, p.getName());
 
+			logger.debug("addCompany(" + p + ") successful");
 			return insertCompany.execute();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			logger.warn("addCompany() failed with: " + e.getMessage());
 		} finally {
-			try {
-				if (insertCompany != null) {
-					insertCompany.close();
-				}
-				if (connection != null) {
-					connection.close();
-				}
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			DAOFactory.closeObject(connection, null, insertCompany);
 		}
 
 		return false;

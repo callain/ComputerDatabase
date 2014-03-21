@@ -1,9 +1,10 @@
 <jsp:include page="include/header.jsp" />
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <section id="main">
 
 	<h1>Add Computer</h1>
 
-	<form action="/computer" method="POST" class="form-horizontal">
+	<form action="/ComputerDatabase/addComputer" method="POST" class="form-horizontal">
 		<fieldset>
 			<div class="form-group">
 				<label for="name" class="col-sm-3 control-label">Computer name:</label>
@@ -18,37 +19,36 @@
 			<div class="form-group">
 				<label for="introduced" class="col-sm-3 control-label">Introduced date:</label>
 				<div class="col-xs-3">
-					<input type="date" class="form-control" name="introducedDate" pattern="YY-MM-dd" />
+					<input type="text" class="form-control" name="introduced"/>
 				</div>
 				<div class="col-xs-3">
-					<span class="help-block">YYYY-MM-DD</span>
+					<span class="help-block">YYYY-MM-DD hh:mm:ss</span>
 				</div>
 			</div>
 			<div class="form-group">
 				<label for="discontinued" class="col-sm-3 control-label">Discontinued date:</label>
 				<div class="col-xs-3">
-					<input type="date" class="form-control" name="introducedDate" pattern="YY-MM-dd" />
+					<input type="text" class="form-control" name="discontinued"/>
 				</div>
 				<div class="col-xs-3">
-					<span class="help-block">YYYY-MM-DD</span>
+					<span class="help-block">YYYY-MM-DD hh:mm:ss</span>
 				</div>
 			</div>
 			<div class="form-group">
 				<label for="company" class="col-sm-3 control-label">Company Name:</label>
 				<div class="col-xs-3">
 					<select name="company" class="form-control">
-						<option value="0">--</option>
-						<option value="1">Apple</option>
-						<option value="2">Dell</option>
-						<option value="3">Lenovo</option>
+						<c:forEach var="company" items="${companies}" >
+							<option value="${company.id}">${company.name}</option>
+						</c:forEach>
 					</select>
 				</div>
 			</div>
 		</fieldset>
 		<div class="actions">
-			<button type="button" class="btn btn-primary">Add</button>
+			<button type="submit" class="btn btn-primary">Add</button>
 			or
-			<a href="/computer" class="btn btn-default">Cancel</a>
+			<a href="computers" class="btn btn-default">Cancel</a>
 		</div>
 	</form>
 </section>

@@ -7,7 +7,7 @@ public class Computer implements Comparable<Computer>{
 	private String name;
 	private Timestamp introduced;
 	private Timestamp discontinued;
-	private int companyId;
+	private Company company;
 
 	public int getId() {
 		return id;
@@ -23,10 +23,6 @@ public class Computer implements Comparable<Computer>{
 
 	public Timestamp getDiscontinued() {
 		return discontinued;
-	}
-
-	public int getCompanyId() {
-		return companyId;
 	}
 
 	public void setId(int id) {
@@ -45,8 +41,12 @@ public class Computer implements Comparable<Computer>{
 		this.discontinued = discontinued;
 	}
 
-	public void setCompanyId(int companyId) {
-		this.companyId = companyId;
+	public Company getCompany() {
+		return company;
+	}
+	
+	public void setCompany(Company company) {
+		this.company = company;
 	}
 	
 	@Override
@@ -82,10 +82,14 @@ public class Computer implements Comparable<Computer>{
 			return false;
 		}
 		
-		if( tmp.companyId != this.companyId ) {
-			return false;
-		}
+//		if( tmp.companyId != this.companyId ) {
+//			return false;
+//		}
 		
 		return true;
+	}
+	
+	public String toString() {
+		return "Computer => id: " + id + " name: " + name + " introduced: " + introduced + " discontinued : " + discontinued;
 	}
 }

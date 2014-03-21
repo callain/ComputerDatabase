@@ -4,6 +4,10 @@
 
 <section id="main">
 	<h1 id="homeTitle">${fn:length(computers)} computers found</h1>
+<!-- 	<div class="alert alert-success alert-dismissable"> -->
+<!-- 		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button> -->
+<!-- 		<strong>Well done!</strong>You sucessfully add a computer. -->
+<!-- 	</div> -->
 	<div id="actions">
 		<form class="form-inline" action="" method="GET">
 			<div class="form-group">
@@ -11,7 +15,7 @@
 				<button type="button" id="searchsubmit" class="btn btn-primary">Filter by name</button>
 			</div>
 		</form>
-		<a class="btn btn-success" id="add" href="addComputer.jsp">Add Computer</a>
+		<a class="btn btn-success" id="add" href="addComputer">Add Computer</a>
 	</div>
 
 	<table class="table table-striped">
@@ -33,9 +37,7 @@
 					<td><a href="#" onclick="">${computer.name}</a></td>
 					<td>${computer.introduced}</td>
 					<td>${computer.discontinued}</td>
-					<c:if test="${computer.companyId != null }">
-						<td>${companies.get(computer.companyId).name}</td>
-					</c:if>
+					<td>${computer.company.name}</td>
 				</tr>
 			</c:forEach>
 		</tbody>

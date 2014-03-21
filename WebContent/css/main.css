@@ -7,6 +7,8 @@ header h1 {
     color: white;
     font-weight: normal;
     font-size: 24px;
+    background: black;
+    margin-top: auto;
 }
 
 section#main {
