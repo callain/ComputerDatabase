@@ -1,3 +1,3 @@
 <%
-response.sendRedirect("/ComputerDatabase");
+response.sendRedirect("computers");
 %>

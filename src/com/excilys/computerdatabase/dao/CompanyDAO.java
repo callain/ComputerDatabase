@@ -50,7 +50,7 @@ public class CompanyDAO {
 			logger.debug("getCompany(" + id + ") successful");
 			return p;
 		} catch (SQLException e) {
-			logger.debug("getCompany(" + id + ") failed with: " + e.getMessage());
+			logger.warn("getCompany(" + id + ") failed with: " + e.getMessage());
 		} finally {
 			DAOFactory.closeObject(connection, rs, getCompany);
 		}

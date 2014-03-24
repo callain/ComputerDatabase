@@ -20,8 +20,8 @@ import com.excilys.computerdatabase.service.CompanyService;
 import com.excilys.computerdatabase.service.ComputerService;
 import com.excilys.computerdatabase.service.ServiceFactory;
 
-public class AddComputerServlet extends HttpServlet {
-	final Logger logger = LoggerFactory.getLogger(AddComputerServlet.class);
+public class EditComputerServlet extends HttpServlet {
+	final Logger logger = LoggerFactory.getLogger(EditComputerServlet.class);
 	
 	private static final long serialVersionUID = 6136920948547853091L;
 	private static ComputerService computerService;
@@ -30,14 +30,33 @@ public class AddComputerServlet extends HttpServlet {
 	@Override
 	public void init() throws ServletException {
 		super.init();
-		logger.debug("AddComputerServlet.init()");
+		logger.debug("EditComputerServlet.init()");
+		
 		computerService = ServiceFactory.getComputerService();
 		companyService = ServiceFactory.getCompanyService();
 	}
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		logger.debug("AddComputerServlet.doGet()");
+		logger.debug("EditComputerServlet.doGet()");
+		
+		String id = req.getParameter("id");
+		int computerId = 0;
+		if( id != null ) {
+			try {
+				computerId = Integer.parseInt(id);
+			}
+			catch(NumberFormatException e) {
+				logger.warn("EditComputerServlet invalid computer id failed with: " + e.getMessage());
+				resp.sendRedirect("computers");
+			}
+		}
+		
+		if( computerService != null && computerId != 0) {
+			Computer computer = computerService.getComputer(computerId);
+			req.setAttribute("computer", computer);
+		}
+		
 		if (companyService != null) {
 			CompanyWrapper companyWrapper = companyService.getCompanies();
 			List<Company> companyList = companyWrapper.getCompanies();
@@ -45,31 +64,33 @@ public class AddComputerServlet extends HttpServlet {
 			req.setAttribute("companies", companyList);
 		}
 
-		getServletContext().getRequestDispatcher("/WEB-INF/addComputer.jsp").forward(req, resp);
+		getServletContext().getRequestDispatcher("/WEB-INF/editComputer.jsp").forward(req, resp);
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		logger.debug("AddComputerServlet.doPost()");
+		logger.debug("EditComputerServlet.doPost()");
 		
+		String pComputerId = req.getParameter("computerId");
 		String pName = req.getParameter("name");
 		String pIntroduced = req.getParameter("introduced");
 		String pDiscontinued = req.getParameter("discontinued");
 		String pCompanyId = req.getParameter("company");
-		
+
 		System.out.println(pIntroduced + " 00:00:00");
 		System.out.println(pDiscontinued + " 00:00:00");
-
+		
 		Timestamp introduced = (pIntroduced != null)? Timestamp.valueOf(pIntroduced + " 00:00:00") : null;
 		Timestamp discontinued = (pDiscontinued != null)? Timestamp.valueOf(pDiscontinued + " 00:00:00") : null;
 
 		Computer c = new Computer();
+		c.setId(Integer.parseInt(pComputerId));
 		c.setName(pName);
 		c.setIntroduced(introduced);
 		c.setDiscontinued(discontinued);
 		c.setCompany(companyService.getCompany(Integer.parseInt(pCompanyId)));
 
-		computerService.addComputer(c);
+		computerService.updateComputer(c);
 		resp.sendRedirect("computers");
 	}
 }

@@ -23,7 +23,27 @@ public class ComputerServiceImpl implements ComputerService{
 	}
 
 	@Override
-	public ComputerWrapper getComputers() {
-		return new ComputerWrapper(computerDAO.getComputers());
+	public ComputerWrapper getComputers(int offset, int nbRows) {
+		return new ComputerWrapper(computerDAO.getComputers(offset, nbRows));
+	}
+
+	@Override
+	public ComputerWrapper search(String name, int offset, int nbRows) {
+		return new ComputerWrapper(computerDAO.search(name, offset, nbRows));
+	}
+
+	@Override
+	public int updateComputer(Computer c) {
+		return computerDAO.updateComputer(c);
+	}
+
+	@Override
+	public boolean deleteComputer(int id) {
+		return computerDAO.deleteComputer(id);
+	}
+
+	@Override
+	public int getTotalComputers() {
+		return computerDAO.getTotalComputers();
 	}
 }
