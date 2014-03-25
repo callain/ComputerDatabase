@@ -12,4 +12,5 @@ public interface ComputerService {
 	public boolean deleteComputer(int id);
 	public ComputerWrapper search(String name, int offset, int nbRows);
 	public int getTotalComputers();
+	public int getTotalComputersForSearch(String name);
 }

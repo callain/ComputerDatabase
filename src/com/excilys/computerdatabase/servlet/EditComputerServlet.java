@@ -76,12 +76,13 @@ public class EditComputerServlet extends HttpServlet {
 		String pIntroduced = req.getParameter("introduced");
 		String pDiscontinued = req.getParameter("discontinued");
 		String pCompanyId = req.getParameter("company");
-
-		System.out.println(pIntroduced + " 00:00:00");
-		System.out.println(pDiscontinued + " 00:00:00");
 		
-		Timestamp introduced = (pIntroduced != null)? Timestamp.valueOf(pIntroduced + " 00:00:00") : null;
-		Timestamp discontinued = (pDiscontinued != null)? Timestamp.valueOf(pDiscontinued + " 00:00:00") : null;
+		if( pName == null || pName.length() < 2 ) {
+			getServletContext().getRequestDispatcher("/WEB-INF/editComputer.jsp").forward(req, resp);
+		}
+
+		Timestamp introduced = (pIntroduced != null && !pIntroduced.equals(""))? Timestamp.valueOf(pIntroduced + " 00:00:00") : null;
+		Timestamp discontinued = (pDiscontinued != null && !pDiscontinued.equals(""))? Timestamp.valueOf(pDiscontinued + " 00:00:00") : null;
 
 		Computer c = new Computer();
 		c.setId(Integer.parseInt(pComputerId));

@@ -36,6 +36,7 @@ public class DashboardServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		logger.debug("DashboardServlet.doGet()");
 		
+		// PAGINATION
 		String page = req.getParameter("page");
 		try {
 			currentPage = Integer.parseInt(page);
@@ -45,14 +46,27 @@ public class DashboardServlet extends HttpServlet {
 			currentPage = 1;
 		}
 		
+		String search = req.getParameter("search");
 		if (computerService != null) {
-			ComputerWrapper computerWrapper = computerService.getComputers((currentPage - 1) * RESULS_PER_PAGE, RESULS_PER_PAGE);
-			List<Computer> computerList = computerWrapper.getComputers();
-			Collections.sort(computerList);
 			
-			int nbComputers = computerService.getTotalComputers();
+			ComputerWrapper computerWrapper;
+			List<Computer> computerList;
+			int nbComputers;
+			if( search == null ) {
+				computerWrapper = computerService.getComputers((currentPage - 1) * RESULS_PER_PAGE, RESULS_PER_PAGE);
+				nbComputers = computerService.getTotalComputers();
+			}
+			else {
+				computerWrapper = computerService.search(search, (currentPage - 1) * RESULS_PER_PAGE, RESULS_PER_PAGE);
+				nbComputers = computerService.getTotalComputersForSearch(search);
+				req.setAttribute("search", search);
+			}
+			
+			computerList = computerWrapper.getComputers();
+			Collections.sort(computerList);
+
 			req.setAttribute("currentPage", currentPage);
-			req.setAttribute("nbPages", nbComputers / RESULS_PER_PAGE);
+			req.setAttribute("nbPages", (int) Math.ceil((double) (nbComputers / RESULS_PER_PAGE)));
 			req.setAttribute("nbComputers", nbComputers );
 			req.setAttribute("computers", computerList);
 		}
@@ -62,23 +76,7 @@ public class DashboardServlet extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		super.doPost(req, resp);
 		logger.debug("DashboardServlet.doPost()");
-		String search = req.getParameter("search");
-		
-		currentPage = 1;
-		if( search != null && computerService != null ) {
-			//search = search.trim().replaceAll("/","\\/").replaceAll("\"", "\\\"").replaceAll("\'", "\\\'");
-			ComputerWrapper computerWrapper = computerService.search(search, (currentPage - 1) * RESULS_PER_PAGE, RESULS_PER_PAGE);
-			List<Computer> computerList = computerWrapper.getComputers();
-			Collections.sort(computerList);
-			
-			int nbComputers = computerService.getTotalComputers();
-			req.setAttribute("currentPage", currentPage);
-			req.setAttribute("nbPages", nbComputers / RESULS_PER_PAGE);
-			req.setAttribute("nbComputers", nbComputers );
-			req.setAttribute("computers", computerList);
-		}
-		
-		getServletContext().getRequestDispatcher("/WEB-INF/dashboard.jsp").forward(req, resp);
 	}
 }

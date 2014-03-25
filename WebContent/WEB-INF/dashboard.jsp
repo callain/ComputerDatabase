@@ -1,16 +1,20 @@
 <jsp:include page="include/header.jsp" />
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
-<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
+<%@ taglib uri="/WEB-INF/boostrapPaginator.tld" prefix="bootstrap" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
 <section id="main">
 	<h1 id="homeTitle">${nbComputers} computers found</h1>
-<!-- 	<div class="alert alert-success alert-dismissable"> -->
-<!-- 		<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button> -->
-<!-- 		<strong>Well done!</strong>You sucessfully add a computer. -->
-<!-- 	</div> -->
+	<c:if test="${add}">
+		<div class="alert alert-success alert-dismissable">
+			<button type="button" class="close" data-dismiss="alert">&times;</button>
+			<strong>Well done!</strong>You sucessfully add a computer.
+		</div>
+	</c:if>
 	<div id="actions">
-		<form class="form-inline" action="" method="POST">
+		<form class="form-inline" action="" method="GET">
 			<div class="form-group">
 				<input type="search" id="searchbox" class="form-control" name="search" value="" placeholder="Search name">
 				<button type="submit" id="searchsubmit" class="btn btn-primary">Filter by name</button>
@@ -18,7 +22,8 @@
 		</form>
 		<a class="btn btn-success" id="add" href="addComputer">Add Computer</a>
 	</div>
-
+	<tags:boostrapPaginatorTag currentPage="${currentPage}" totalPages="${nbPages}" search="${search}"/>
+<%-- 	<bootstrap:pagination currentPage="${currentPage}" totalPages="${nbPages}" search="${search}"/> --%>
 	<table class="table table-striped">
 		<thead>
 			<tr>
@@ -37,42 +42,15 @@
 			<c:forEach var="computer" items="${computers}">
 				<tr>
 					<td><a href="editComputer?id=${computer.id}">${computer.name}</a></td>
-					<td><fmt:formatDate pattern="dd/MM/yyyy" value="${computer.introduced}" /></td>
-					<td><fmt:formatDate pattern="dd/MM/yyyy" value="${computer.discontinued}" /></td>
+					<td><fmt:formatDate pattern="YYYY-MM-dd" value="${computer.introduced}" /></td>
+					<td><fmt:formatDate pattern="YYYY-MM-dd" value="${computer.discontinued}" /></td>
 					<td>${computer.company.name}</td>
-					<td><a href="deleteComputer?id=${computer.id}"><span class="glyphicon glyphicon-trash" style="color: #d9534f"></span></a></td>
+					<td><a type="button" class="btn btn-danger" href="deleteComputer?id=${computer.id}"><span class="glyphicon glyphicon-trash"></span></a></td>
 				</tr>
 			</c:forEach>
 		</tbody>
 	</table>
-	
-	<%--For displaying Previous link except for the 1st page --%>
-	 <ul class="pagination">
-	 <c:choose>
-		 <c:when test="${currentPage == 1}">
-	          <li class="disabled"><a href="#">&laquo;</a></li>
-	     </c:when>
-	     <c:otherwise>
-	     	<li><a href="computers?page=${currentPage - 1}">&laquo;</a></li>
-	     </c:otherwise>
-     </c:choose>
-     
-     <c:forEach begin="1" end="${nbPages}" var="i">
-         <c:choose>
-             <c:when test="${currentPage eq i}">
-                 <li class="active"><a href="#">${i}</a></li>
-             </c:when>
-             <c:otherwise>
-                 <li><a href="computers?page=${i}">${i}</a></li>
-             </c:otherwise>
-         </c:choose>
-     </c:forEach>
-        
-     <%--For displaying Next link --%>
-		<c:if test="${currentPage lt nbPages}">
-		   <li><a href="computers?page=${currentPage + 1}">&raquo;</a></li>
-		</c:if>
-    </ul>
+	<tags:boostrapPaginatorTag currentPage="${currentPage}" totalPages="${nbPages}" search="${search}"/>
 </section>
 
 <jsp:include page="include/footer.jsp" />

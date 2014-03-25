@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!DOCTYPE taglib
+            PUBLIC "-//Sun Microsystems, Inc.//DTD JSP Tag Library 1.1//EN" 
+            "http://java.sun.com/j2ee/dtds/web-jsptaglib_1_1.dtd">
+
+<taglib>
+	<tlibversion>1.0</tlibversion>
+	<jspversion>1.1</jspversion>
+	<shortname>bootstrap</shortname>
+	<uri>http://tag.computerdatabase.excilys.com/taglib/boostrap</uri>
+
+	<tag>
+		<name>pagination</name>
+		<tagclass>com.excilys.computerdatabase.tag.BoostrapPaginatorTag</tagclass>
+		<info>
+			Display a nice boostrapped pagination with possible search in URL
+		</info>
+		<attribute>
+			<name>currentPage</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>totalPages</name>
+			<required>true</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+		<attribute>
+			<name>search</name>
+			<required>false</required>
+			<rtexprvalue>true</rtexprvalue>
+		</attribute>
+	</tag>
+</taglib>

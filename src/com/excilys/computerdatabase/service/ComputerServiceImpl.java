@@ -46,4 +46,9 @@ public class ComputerServiceImpl implements ComputerService{
 	public int getTotalComputers() {
 		return computerDAO.getTotalComputers();
 	}
+
+	@Override
+	public int getTotalComputersForSearch(String name) {
+		return computerDAO.getTotalComputersForSearch(name);
+	}
 }

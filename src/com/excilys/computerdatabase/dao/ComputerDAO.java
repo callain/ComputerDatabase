@@ -144,13 +144,26 @@ public class ComputerDAO {
 		logger.debug("addComputer(" + c + ")");
 		PreparedStatement insertComputer = null;
 		Connection connection = DAOFactory.getConnection();
-		boolean returnz = false;
+		boolean results = false;
 		
 		try {
 			insertComputer = connection.prepareStatement("INSERT INTO computer values(null,?,?,?,?)");
 			insertComputer.setString(1, c.getName());
-			insertComputer.setTimestamp(2, c.getIntroduced());
-			insertComputer.setTimestamp(3, c.getDiscontinued());
+			
+			if( c.getIntroduced() == null ) {
+				insertComputer.setNull(2, Types.NULL);
+			}
+			else {
+				insertComputer.setTimestamp(2, c.getIntroduced());
+			}
+			
+			if( c.getDiscontinued() == null ) {
+				insertComputer.setNull(3, Types.NULL);
+			}
+			else {
+				insertComputer.setTimestamp(3, c.getDiscontinued());
+			}
+						
 			if( c.getCompany() == null ) {
 				insertComputer.setNull(4, Types.NULL);
 			}
@@ -158,7 +171,7 @@ public class ComputerDAO {
 				insertComputer.setInt(4, c.getCompany().getId());
 			}
 
-			returnz = insertComputer.execute();
+			results = insertComputer.execute();
 		} catch (SQLException e) {
 			logger.warn("addComputer(" + c + ") failed with: " +e.getMessage());
 			return false;
@@ -167,14 +180,14 @@ public class ComputerDAO {
 		}
 
 		logger.debug("addComputer(" + c + ") successful");
-		return returnz;
+		return results;
 	}
 	
 	public int updateComputer(Computer c) {
 		logger.debug("updateComputer(" + c + ")");
 		PreparedStatement updateComputer = null;
 		Connection connection = DAOFactory.getConnection();
-		int returnz = 0;
+		int results = 0;
 		try {
 			updateComputer = connection.prepareStatement(
 						"UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? "
@@ -193,7 +206,7 @@ public class ComputerDAO {
 			
 			updateComputer.setInt(5, c.getId());
 			
-			returnz = updateComputer.executeUpdate();
+			results = updateComputer.executeUpdate();
 		} catch(SQLException e) {
 			logger.warn("updateComputer(" + c + ") failed with: " + e.getMessage());
 			return 0;
@@ -202,7 +215,7 @@ public class ComputerDAO {
 		}
 	
 		logger.debug("updateComputer(" + c + ") successful");	
-		return returnz;
+		return results;
 	}
 	
 
@@ -277,5 +290,40 @@ public class ComputerDAO {
 
 		logger.debug("search(" + name + ") successful");
 		return computerList;
+	}
+	
+	public int getTotalComputersForSearch(String name) {
+		logger.debug("totalComputersForSearch(" + name + ")");
+		
+		Connection connection = DAOFactory.getConnection();
+
+		PreparedStatement getComputers = null;
+		ResultSet rs = null;
+
+		int results = 0;
+		try {
+			getComputers = connection.prepareStatement(
+						"SELECT count(computer.id) "
+					+ 	"FROM computer "
+					+ 	"LEFT JOIN company ON computer.company_id = company.id "
+					+	"WHERE computer.name LIKE ? "
+					+	"OR company.name LIKE ? ");
+			
+			getComputers.setString(1, "%" + name + "%");
+			getComputers.setString(2, "%" + name + "%");
+			
+			rs = getComputers.executeQuery();
+			rs.next();
+			results =  rs.getInt(1);
+			
+		} catch (SQLException e) {
+			logger.debug("totalComputersForSearch(" + name + ") failed with: " + e.getMessage());
+			return 0;
+		} finally {
+			DAOFactory.closeObject(connection, rs, getComputers);
+		}
+
+		logger.debug("totalComputersForSearch(" + name + ") successful");
+		return results;
 	}
 }

@@ -1,5 +1,6 @@
 <jsp:include page="include/header.jsp" />
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
 <script>
 $(function() {
 	$(".datepicker").datepicker({dateFormat: "yy-mm-dd" });
@@ -24,6 +25,9 @@ $(function() {
 				<input type="text" class="form-control datepicker" name="introduced" id="introduced"/>
 				<span class="glyphicon form-control-feedback"></span>
 			</div>
+			<div class="col-xs-3">
+				<span class="help-block">YYYY-MM-DD</span>
+			</div>
 		</div>
 		
 		<div class="form-group has-feedback">
@@ -31,6 +35,9 @@ $(function() {
 			<div class="col-xs-3">
 				<input type="text" class="form-control datepicker" name="discontinued" id="discontinued"/>
 				<span class="glyphicon form-control-feedback"></span>
+			</div>
+			<div class="col-xs-3">
+				<span class="help-block">YYYY-MM-DD</span>
 			</div>
 		</div>
 		<div class="form-group has-feedback">

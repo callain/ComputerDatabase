@@ -1,5 +1,13 @@
 <jsp:include page="include/header.jsp" />
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<script>
+$(function() {
+	$(".datepicker").datepicker({dateFormat: "yy-mm-dd" });
+});
+</script>
+
 <section id="main">
 
 	<h1>Edit Computer</h1>
@@ -19,16 +27,24 @@
 		<div class="form-group has-feedback">
 			<label for="introduced" class="col-sm-3 control-label">Introduced date:</label>
 			<div class="col-xs-3">
-				<input type="text" class="form-control" name="introduced" value="${computer.introduced}" />
+				<fmt:formatDate pattern="YYYY-MM-dd" value="${computer.introduced}"  var="formattedIntroduced"/>
+				<input type="text" class="form-control datepicker" name="introduced" value="${formattedIntroduced}" />
 				<span class="glyphicon form-control-feedback"></span>
+			</div>
+			<div class="col-xs-3">
+				<span class="help-block">YYYY-MM-DD</span>
 			</div>
 		</div>
 		
 		<div class="form-group has-feedback">
 			<label for="discontinued" class="col-sm-3 control-label">Discontinued date:</label>
 			<div class="col-xs-3">
-				<input type="text" class="form-control" name="discontinued" value="${computer.discontinued}" />
+				<fmt:formatDate pattern="YYYY-MM-dd" value="${computer.discontinued}"  var="formattedDiscontinued"/>
+				<input type="text" class="form-control datepicker" name="discontinued" value="${formattedDiscontinued}" />
 				<span class="glyphicon form-control-feedback"></span>
+			</div>
+			<div class="col-xs-3">
+				<span class="help-block">YYYY-MM-DD</span>
 			</div>
 		</div>
 		
