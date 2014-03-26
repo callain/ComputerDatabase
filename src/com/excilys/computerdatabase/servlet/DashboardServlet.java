@@ -46,12 +46,17 @@ public class DashboardServlet extends HttpServlet {
 		String search = req.getParameter("search");
 
 		// PAGINATION
-		try {
-			currentPage = Integer.parseInt(page);
-		}
-		catch(NumberFormatException e) {
-			logger.warn("DashboardServlet.doGet() Invalid page number failed with : " + e.getMessage() );
+		if( page == null || page.isEmpty() ) {
 			currentPage = 1;
+		}
+		else {
+			try {
+				currentPage = Integer.parseInt(page);
+			}
+			catch(NumberFormatException e) {
+				logger.warn("DashboardServlet.doGet() Invalid page number failed with : " + e.getMessage() );
+				currentPage = 1;
+			}
 		}
 
 		// QUERY TO SEND
@@ -82,6 +87,7 @@ public class DashboardServlet extends HttpServlet {
 			for(int i = 0 ; i < computerField.length ; i++ ) {
 				if( qb.getField().equals(computerField[i].getName()) ) {
 					if( qb.getDirection() ) computerFieldSort.put(computerField[i], "DESC");
+					else computerFieldSort.put(computerField[i], "ASC");
 				}
 				else computerFieldSort.put(computerField[i], "ASC");
 			}
@@ -99,7 +105,7 @@ public class DashboardServlet extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		super.doPost(req, resp);
+		this.doGet(req, resp);
 		logger.debug("DashboardServlet.doPost()");
 	}
 }

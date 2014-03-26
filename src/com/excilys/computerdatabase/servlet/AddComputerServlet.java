@@ -71,6 +71,8 @@ public class AddComputerServlet extends HttpServlet {
 		c.setCompany(companyService.getCompany(Integer.parseInt(pCompanyId)));
 
 		computerService.addComputer(c);
-		resp.sendRedirect("computers");
+		
+		req.setAttribute("computerAdded", true);
+		getServletContext().getRequestDispatcher("/computers").forward(req, resp);
 	}
 }

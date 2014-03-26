@@ -48,12 +48,13 @@ public class DeleteComputerServlet extends HttpServlet {
 			computerService.deleteComputer(computerId);
 		}
 		
-		resp.sendRedirect("computers");
+		req.setAttribute("computerDeleted", true);
+		getServletContext().getRequestDispatcher("/computers").forward(req, resp);
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		logger.debug("DeleteComputerServlet.doPost()");
-		resp.sendRedirect("computers");
+		getServletContext().getRequestDispatcher("/computers").forward(req, resp);
 	}
 }

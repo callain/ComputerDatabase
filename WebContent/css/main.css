@@ -41,35 +41,12 @@ table.computers .company_name {
 table.computers .header a {
 }
 
-#actions {
-    position: relative;
+.table td, th {
+	text-align: center !important;
+	vertical-align: middle !important;
 }
 
-#actions #add {
-    position: absolute;
-    right: 0;
-    top: 0;
-}
-
-#pagination {
-    position: relative;
-}
-
-#pagination ul {
-    position: absolute;
-    right: 0;
-}
-
-#pagination ul .current a {
-    color: #666;
-}
-
-.col2 {
-	width: 50%;
-}
-.col3, .col4 {
-	width: 10%;
-}
-.col5 {
-	width: 30%;
+.pagination {
+	display: inline !important;
+	margin-right: 20px;
 }
