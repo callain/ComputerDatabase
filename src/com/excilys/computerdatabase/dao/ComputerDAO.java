@@ -69,25 +69,42 @@ public class ComputerDAO {
 		logger.debug("getComputer(" + id + ") successful");
 		return p;
 	}
-
-	public ArrayList<Computer> getComputers(int offset, int nbRows) {
-		logger.debug("getComputers()");
+	
+	public ArrayList<Computer> getComputers(QueryBuilder qb) {
+		logger.debug("getComputers(" + qb + ")");
 		Connection connection = DAOFactory.getConnection();
-
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT computer.id, computer.name, computer.introduced, computer.discontinued, company.id, company.name ");
+		sb.append("FROM computer ");
+		sb.append("LEFT JOIN company ON computer.company_id = company.id ");
+		
+		String search = (qb.getSearch() == null)? "": qb.getSearch();
+		if( !search.isEmpty() ) {
+			sb.append("WHERE computer.name LIKE '%" + search + "%' OR company.name LIKE '%" + search + "%' ");
+		}
+		
+		String field = qb.getField();
+		
+		boolean direction = qb.getDirection();
+		if( !field.isEmpty() ) {
+			sb.append("ORDER BY "  + field + " ");
+			if( direction ) {
+				sb.append("DESC ");
+			}
+		}
+		
+		int offset = qb.getOffset();
+		int nbRows = qb.getNbRows();
+		
+		if( nbRows != 0 ) sb.append("LIMIT " + offset + "," + nbRows);
+		
 		PreparedStatement getComputers = null;
 		ResultSet rs = null;
-
 		ArrayList<Computer> computerList = new ArrayList<Computer>();
-
+		
 		try {
-			getComputers = connection.prepareStatement(
-						"SELECT computer.id, computer.name, computer.introduced, computer.discontinued, company.id, company.name "
-					+ 	"FROM computer "
-					+ 	"LEFT JOIN company ON computer.company_id = company.id "
-					+	"LIMIT ?,?");
-			
-			getComputers.setInt(1, offset);
-			getComputers.setInt(2, nbRows);
+			getComputers = connection.prepareStatement(sb.toString());
 			
 			rs = getComputers.executeQuery();
 
@@ -112,32 +129,6 @@ public class ComputerDAO {
 
 		logger.debug("getComputers() successful");
 		return computerList;
-	}
-	
-	public int getTotalComputers() {
-		logger.debug("getTotalComputers()");
-		
-		PreparedStatement getTotalComputers = null;
-		Connection connection = DAOFactory.getConnection();
-		
-		ResultSet rs = null;
-		int results = 0;
-		try {
-			getTotalComputers = connection.prepareStatement("SELECT count(id) FROM computer");
-			rs = getTotalComputers.executeQuery();
-			rs.next();
-			
-			results =  rs.getInt(1);
-		}
-		catch(SQLException e) {
-			logger.warn("getComputers() failed with: " + e.getMessage());
-			return 0;
-		}
-		finally {
-			DAOFactory.closeObject(connection, rs, getTotalComputers);
-		}
-		
-		return results;
 	}
 
 	public boolean addComputer(Computer c) {
@@ -242,88 +233,40 @@ public class ComputerDAO {
 		logger.debug("deleteComputer(" + id + ") successful");
 		return returnz;
 	}
-	
-	public ArrayList<Computer> search(String name, int offset, int nbRows) {
-		logger.debug("search(" + name + ")");
+
+	public int getTotalComputers(QueryBuilder qb) {
+		logger.debug("getTotalComputers(" + qb + ")");
 		Connection connection = DAOFactory.getConnection();
-
-		PreparedStatement getComputers = null;
-		ResultSet rs = null;
-
-		ArrayList<Computer> computerList = new ArrayList<Computer>();
-
-		try {
-			getComputers = connection.prepareStatement(
-						"SELECT computer.id, computer.name, computer.introduced, computer.discontinued, company.id, company.name "
-					+ 	"FROM computer "
-					+ 	"LEFT JOIN company ON computer.company_id = company.id "
-					+	"WHERE computer.name LIKE ? "
-					+	"OR company.name LIKE ? "
-					+ 	"LIMIT ?,?");
-			
-			getComputers.setString(1, "%" + name + "%");
-			getComputers.setString(2, "%" + name + "%");
-			getComputers.setInt(3, offset);
-			getComputers.setInt(4, nbRows);
-			
-			rs = getComputers.executeQuery();
-
-			while (rs.next()) {
-				Computer p = new Computer();
-				p.setId(rs.getInt(1));
-				p.setName(rs.getString(2));
-				p.setIntroduced(rs.getTimestamp(3));
-				p.setDiscontinued(rs.getTimestamp(4));
-				Company company = new Company();
-				company.setId(rs.getInt(5));
-				company.setName(rs.getString(6));
-				p.setCompany(company);
-				computerList.add(p);
-			}
-			
-		} catch (SQLException e) {
-			logger.debug("search(" + name + ") failed with: " + e.getMessage());
-			return null;
-		} finally {
-			DAOFactory.closeObject(connection, rs, getComputers);
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT count(computer.id) ");
+		sb.append("FROM computer ");
+		sb.append("LEFT JOIN company ON computer.company_id = company.id ");
+		
+		String search = (qb.getSearch() == null )? "" : qb.getSearch();
+		if( !search.isEmpty() ) {
+			sb.append("WHERE computer.name LIKE '%" + search + "%' OR company.name LIKE '%" + search + "%' ");
 		}
 
-		logger.debug("search(" + name + ") successful");
-		return computerList;
-	}
-	
-	public int getTotalComputersForSearch(String name) {
-		logger.debug("totalComputersForSearch(" + name + ")");
-		
-		Connection connection = DAOFactory.getConnection();
-
 		PreparedStatement getComputers = null;
 		ResultSet rs = null;
-
 		int results = 0;
 		try {
-			getComputers = connection.prepareStatement(
-						"SELECT count(computer.id) "
-					+ 	"FROM computer "
-					+ 	"LEFT JOIN company ON computer.company_id = company.id "
-					+	"WHERE computer.name LIKE ? "
-					+	"OR company.name LIKE ? ");
-			
-			getComputers.setString(1, "%" + name + "%");
-			getComputers.setString(2, "%" + name + "%");
+			getComputers = connection.prepareStatement(sb.toString());
 			
 			rs = getComputers.executeQuery();
 			rs.next();
 			results =  rs.getInt(1);
 			
 		} catch (SQLException e) {
-			logger.debug("totalComputersForSearch(" + name + ") failed with: " + e.getMessage());
+			logger.warn("getTotalComputers() failed with: " + e.getMessage());
+			logger.warn("REQ : " + getComputers);
 			return 0;
 		} finally {
 			DAOFactory.closeObject(connection, rs, getComputers);
 		}
 
-		logger.debug("totalComputersForSearch(" + name + ") successful");
+		logger.debug("getTotalComputers() successful");
 		return results;
 	}
 }

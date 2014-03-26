@@ -1,6 +1,7 @@
 <%@ tag language="java" pageEncoding="UTF-8"%>
 
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
 <%@ attribute name="currentPage" required="true"%>
 <%@ attribute name="totalPages" required="true"%>
@@ -10,119 +11,49 @@
 <ul class="pagination">
 
 	<!-- FIRST PAGE -->
-	<c:choose>
-		<c:when test="${currentPage != 1}">
-			<c:choose>
-				<c:when test="${!empty search}">
-					<li><a href="computers?page=1&search=${search}">&laquo;</a></li>
-				</c:when>
-				<c:otherwise>
-					<li><a href="computers?page=1">&laquo;</a></li>
-				</c:otherwise>
-			</c:choose>
-		</c:when>
-		<c:otherwise>
-			<li class="disabled"><a href="computers?page=1">&laquo;</a></li>
-		</c:otherwise>
-	</c:choose>
+	<li <c:if test="${currentPage == 1}">class="disabled"</c:if>><tags:link href="computers" page="1" search="${search}" content="&laquo;" /></li>
 
 	<!-- PREVIOUS PAGE -->
 	<c:choose>
-		<c:when test="${currentPage == 1}">
-			<li class="disabled"><a href="#">&lt;</a></li>
+		<c:when test="${currentPage == 1}" >
+			<li class="disabled"><tags:link href="#" content="&lt;" search="${search}"/></li>
 		</c:when>
 		<c:otherwise>
-			<c:choose>
-				<c:when test="${!empty search}">
-					<li><a href="computers?page=${currentPage - 1}&search=${search}">&lt;</a></li>
-				</c:when>
-				<c:otherwise>
-					<li><a href="computers?page=${currentPage - 1}">&lt;</a></li>
-				</c:otherwise>
-			</c:choose>
-		</c:otherwise>
+			<li><tags:link href="computers" content="&lt;" page="${currentPage - 1}" search="${search}"/></li>
+		</c:otherwise>		
 	</c:choose>
 
 	<!-- CURRENT PAGE - 2 -->
 	<c:if test="${currentPage - 2 >= 1 }">
-		<c:choose>
-				<c:when test="${!empty search}">
-					<li><a href="computers?page=${currentPage - 2}&search=${search}">${currentPage - 1}</a></li>
-				</c:when>
-				<c:otherwise>
-					<li><a href="computers?page=${currentPage - 2}">${currentPage - 2}</a></li>
-				</c:otherwise>
-			</c:choose>
+		<li><tags:link href="computers" page="${currentPage - 2}" search="${search}" content="${currentPage - 2}" /></li>
 	</c:if>
 	<c:if test="${currentPage - 1 >= 1 }">
-		<c:choose>
-				<c:when test="${!empty search}">
-					<li><a href="computers?page=${currentPage - 1}&search=${search}">${currentPage - 1}</a></li>
-				</c:when>
-				<c:otherwise>
-					<li><a href="computers?page=${currentPage - 1}">${currentPage - 1}</a></li>
-				</c:otherwise>
-			</c:choose>
+		<li><tags:link href="computers" page="${currentPage - 1}" search="${search}" content="${currentPage - 1}" /></li>
 	</c:if>
-
+	
 	<!-- CURRENT PAGE -->
 	<li class="active"><a href="#">${currentPage}</a></li>
 
 	<!-- CURRENT PAGE + 2 -->
-	<c:if test="${currentPage + 1 < totalPages }">
-		<c:choose>
-				<c:when test="${!empty search}">
-					<li><a href="computers?page=${currentPage + 1}&search=${search}">${currentPage + 1}</a></li>
-				</c:when>
-				<c:otherwise>
-					<li><a href="computers?page=${currentPage + 1}">${currentPage + 1}</a></li>
-				</c:otherwise>
-			</c:choose>
+	<c:if test="${currentPage + 1 <= totalPages }">
+		<li><tags:link href="computers" page="${currentPage + 1}" search="${search}" content="${currentPage + 1}" /></li>
 	</c:if>
-	<c:if test="${currentPage + 2 < totalPages }">
-		<c:choose>
-				<c:when test="${!empty search}">
-					<li><a href="computers?page=${currentPage + 2}&search=${search}">${currentPage + 2}</a></li>
-				</c:when>
-				<c:otherwise>
-					<li><a href="computers?page=${currentPage + 2}">${currentPage + 2}</a></li>
-				</c:otherwise>
-			</c:choose>
+	<c:if test="${currentPage + 2 <= totalPages }">
+		<li><tags:link href="computers" page="${currentPage + 2}" search="${search}" content="${currentPage + 2}" /></li>
 	</c:if>
 
 	<!-- NEXT PAGE -->
 	<c:choose>
-		<c:when test="${currentPage == totalPages}">
-			<li class="disabled"><a href="#">&gt;</a></li>
-	</c:when>
+		<c:when test="${currentPage == totalPages}" >
+			<li class="disabled"><tags:link href="#" content="&gt;" search="${search}"/></li>
+		</c:when>
 		<c:otherwise>
-			<c:choose>
-				<c:when test="${!empty search}">
-					<li><a href="computers?page=${currentPage + 1}&search=${search}">&gt;</a></li>
-				</c:when>
-				<c:otherwise>
-					<li><a href="computers?page=${currentPage + 1}">&gt;</a></li>
-				</c:otherwise>
-			</c:choose>
-		</c:otherwise>
+			<li><tags:link href="computers" content="&gt;" page="${currentPage + 1}" search="${search}"/></li>
+		</c:otherwise>		
 	</c:choose>
 
 	<!-- LAST PAGE -->
-	<c:choose>
-		<c:when test="${currentPage + 2 != totalPages && currentPage != totalPages}">
-			<c:choose>
-				<c:when test="${!empty search}">
-					<li><a href="computers?page=${totalPages}&search=${search}">&raquo;</a></li>
-				</c:when>
-				<c:otherwise>
-					<li><a href="computers?page=${totalPages}">&raquo;</a></li>
-				</c:otherwise>
-			</c:choose>
-		</c:when>
-		<c:otherwise>
-			<li class="disabled"><a href="computers?page=${totalPages}">&raquo;</a></li>
-		</c:otherwise>
-	</c:choose>
+	<li <c:if test="${currentPage == totalPages}">class="disabled"</c:if>><tags:link href="computers" page="${totalPages}" search="${search}" content="&raquo;" /></li>
 
 	<!-- END LIST -->
 </ul>

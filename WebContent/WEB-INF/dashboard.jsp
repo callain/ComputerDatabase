@@ -2,7 +2,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
-<%@ taglib uri="/WEB-INF/boostrapPaginator.tld" prefix="bootstrap" %>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
 <section id="main">
@@ -23,18 +22,17 @@
 		<a class="btn btn-success" id="add" href="addComputer">Add Computer</a>
 	</div>
 	<tags:boostrapPaginatorTag currentPage="${currentPage}" totalPages="${nbPages}" search="${search}"/>
-<%-- 	<bootstrap:pagination currentPage="${currentPage}" totalPages="${nbPages}" search="${search}"/> --%>
 	<table class="table table-striped">
 		<thead>
 			<tr>
 				<!-- Variable declarations for passing labels as parameters -->
 				<!-- Table header for Computer Name -->
-				<th>Computer Name</th>
-				<th>Introduced Date</th>
+				<th><a href="computers?page=${currentPage}&field=${computerField[1]}&orderBy=${computerFieldSort.get(computerField[1])}" >Computer Name</a></th>
+				<th><a href="computers?page=${currentPage}&field=${computerField[2]}&orderBy=${computerFieldSort.get(computerField[2])}" >Introduced Date</a></th>
 				<!-- Table header for Discontinued Date -->
-				<th>Discontinued Date</th>
+				<th><a href="computers?page=${currentPage}&field=${computerField[3]}&orderBy=${computerFieldSort.get(computerField[3])}" >Discontinued Date</a></th>
 				<!-- Table header for Company -->
-				<th>Company</th>
+				<th><a href="computers?page=${currentPage}&field=${computerField[4]}&orderBy=${computerFieldSort.get(computerField[4])}" >Company</a></th>
 				<th></th>
 			</tr>
 		</thead>

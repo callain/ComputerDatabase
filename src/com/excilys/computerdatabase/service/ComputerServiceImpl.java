@@ -1,6 +1,7 @@
 package com.excilys.computerdatabase.service;
 
 import com.excilys.computerdatabase.dao.ComputerDAO;
+import com.excilys.computerdatabase.dao.QueryBuilder;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.ComputerWrapper;
 
@@ -23,16 +24,6 @@ public class ComputerServiceImpl implements ComputerService{
 	}
 
 	@Override
-	public ComputerWrapper getComputers(int offset, int nbRows) {
-		return new ComputerWrapper(computerDAO.getComputers(offset, nbRows));
-	}
-
-	@Override
-	public ComputerWrapper search(String name, int offset, int nbRows) {
-		return new ComputerWrapper(computerDAO.search(name, offset, nbRows));
-	}
-
-	@Override
 	public int updateComputer(Computer c) {
 		return computerDAO.updateComputer(c);
 	}
@@ -41,14 +32,14 @@ public class ComputerServiceImpl implements ComputerService{
 	public boolean deleteComputer(int id) {
 		return computerDAO.deleteComputer(id);
 	}
-
+	
 	@Override
-	public int getTotalComputers() {
-		return computerDAO.getTotalComputers();
+	public ComputerWrapper getComputers(QueryBuilder qb) {
+		return new ComputerWrapper(computerDAO.getComputers(qb));
 	}
 
 	@Override
-	public int getTotalComputersForSearch(String name) {
-		return computerDAO.getTotalComputersForSearch(name);
+	public int getTotalComputers(QueryBuilder qb) {
+		return computerDAO.getTotalComputers(qb);
 	}
 }
