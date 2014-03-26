@@ -92,6 +92,8 @@ public class EditComputerServlet extends HttpServlet {
 		c.setCompany(companyService.getCompany(Integer.parseInt(pCompanyId)));
 
 		computerService.updateComputer(c);
-		resp.sendRedirect("computers");
+		
+		req.setAttribute("computerEdited", true);
+		getServletContext().getRequestDispatcher("/computers").forward(req, resp);
 	}
 }

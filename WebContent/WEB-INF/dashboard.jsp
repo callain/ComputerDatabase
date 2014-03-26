@@ -14,6 +14,13 @@
 		</div>
 	</c:if>
 	
+	<c:if test="${computerEdited}">
+		<div class="alert alert-success alert-dismissable">
+			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+			<strong>Well done!</strong> You sucessfully edited a computer.
+		</div>
+	</c:if>
+	
 	<c:if test="${computerDeleted}">
 		<div class="alert alert-success alert-dismissable">
 			<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>

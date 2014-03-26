@@ -25,7 +25,7 @@ public class DashboardServlet extends HttpServlet {
 
 	private static final long serialVersionUID = 1643759483804088905L;
 	private static ComputerService computerService;
-	private static final int RESULS_PER_PAGE = 20;
+	private static final int RESULS_PER_PAGE = 12;
 	private int currentPage = 1;
 	
 	@Override
