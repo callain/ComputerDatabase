@@ -8,14 +8,23 @@
 		});
 	});
 </script>
+
+<c:if test="${name}">
+	<script>
+		$('#name').valid();
+	</script>
+</c:if>
+
 <section id="main">
 	<div class="container">
 		<h1>Add Computer</h1>
 		<form action="addComputer" method="POST" id="computer-form" class="form-horizontal">
+			
 			<div class="form-group has-feedback">
 				<label for="name" class="col-sm-3 control-label">Computer name:</label>
 				<div class="col-xs-3">
-					<input type="text" class="form-control" name="name" /> <span class="glyphicon form-control-feedback"></span>
+					<input type="text" class="form-control" name="name" id="name"/>
+					<span class="glyphicon form-control-feedback"></span>
 				</div>
 			</div>
 

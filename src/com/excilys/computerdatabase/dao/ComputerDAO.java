@@ -16,34 +16,38 @@ import com.excilys.computerdatabase.domain.Computer;
 public class ComputerDAO {
 	final Logger logger = LoggerFactory.getLogger(ComputerDAO.class);
 
-	private static ComputerDAO ComputerDAO;
+	private static ComputerDAO computerDAO;
 
 	private ComputerDAO() {
 	}
 
 	public static ComputerDAO getInstance() {
-		if (ComputerDAO != null)
-			return ComputerDAO;
+		if (computerDAO != null)
+			return computerDAO;
 
-		ComputerDAO = new ComputerDAO();
-		return ComputerDAO;
+		computerDAO = new ComputerDAO();
+		return computerDAO;
 	}
 
 	public Computer getComputer(int id) {
 		logger.debug("getComputer(" + id + ")");
-		Connection connection = DAOFactory.getConnection();
+		
+		Connection connection = DAOFactory.INSTANCE.getConnection();
+
 		PreparedStatement getComputer = null;
 		ResultSet rs = null;
 		Computer p = null;
 
+		StringBuilder sb = new StringBuilder();
+		sb.append("SELECT computer.id, computer.name, computer.introduced, computer.discontinued, company.id, company.name ");
+		sb.append("FROM computer ");
+		sb.append("LEFT JOIN company ON computer.company_id = company.id ");
+		sb.append("WHERE computer.id = ? ");
+
 		try {
-			getComputer = connection.prepareStatement(
-					"SELECT computer.id, computer.name, computer.introduced, computer.discontinued, company.id, company.name "
-			+ 		"FROM computer "
-			+		"LEFT JOIN company ON computer.company_id = company.id "
-			+ 		"WHERE computer.id = ?"
-			);
+			connection.setAutoCommit(false);
 			
+			getComputer = connection.prepareStatement(sb.toString());			
 			getComputer.setInt(1, id);
 
 			rs = getComputer.executeQuery();
@@ -59,11 +63,17 @@ public class ComputerDAO {
 			company.setName(rs.getString(6));
 			p.setCompany(company);
 			
+			connection.commit();
 		} catch (SQLException e) {
-			logger.warn("getComputer(" + id + ") failed with: " + e.getMessage());
-			return null;
+			logger.error("getComputer(" + id + ") failed with: " + e.getMessage());
+			try {
+				logger.error("getComputer(" + id + ") Connection is being rollback()");
+				connection.rollback();
+			} catch (SQLException exception) {
+				logger.error("getComputer(" + id + ") failed with: " + exception.getMessage());
+			}
 		} finally {
-			DAOFactory.closeObject(connection, rs, getComputer);
+			DAOFactory.INSTANCE.closeObject(connection, rs, getComputer);
 		}
 
 		logger.debug("getComputer(" + id + ") successful");
@@ -72,32 +82,23 @@ public class ComputerDAO {
 	
 	public ArrayList<Computer> getComputers(QueryBuilder qb) {
 		logger.debug("getComputers(" + qb + ")");
-		Connection connection = DAOFactory.getConnection();
+		Connection connection = DAOFactory.INSTANCE.getConnection();
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT computer.id, computer.name, computer.introduced, computer.discontinued, company.id, company.name ");
 		sb.append("FROM computer ");
 		sb.append("LEFT JOIN company ON computer.company_id = company.id ");
+		sb.append("WHERE computer.name LIKE ? OR company.name LIKE ? ");
 		
-		String search = (qb.getSearch() == null)? "": qb.getSearch();
-		if( !search.isEmpty() ) {
-			sb.append("WHERE computer.name LIKE '%" + search + "%' OR company.name LIKE '%" + search + "%' ");
+		String field = (qb.getField() == null)? ComputerField.NAME.getName() : qb.getField();
+		if( qb.getDirection() ) {
+			sb.append(String.format("ORDER BY %s DESC ", field));
+		}
+		else {
+			sb.append(String.format("ORDER BY %s ", field));
 		}
 		
-		String field = qb.getField();
-		
-		boolean direction = qb.getDirection();
-		if( !field.isEmpty() ) {
-			sb.append("ORDER BY "  + field + " ");
-			if( direction ) {
-				sb.append("DESC ");
-			}
-		}
-		
-		int offset = qb.getOffset();
-		int nbRows = qb.getNbRows();
-		
-		if( nbRows != 0 ) sb.append("LIMIT " + offset + "," + nbRows);
+		sb.append("LIMIT ?,?");
 		
 		PreparedStatement getComputers = null;
 		ResultSet rs = null;
@@ -105,7 +106,16 @@ public class ComputerDAO {
 		
 		try {
 			getComputers = connection.prepareStatement(sb.toString());
+			connection.setAutoCommit(false);
 			
+			String search = (qb.getSearch() == null)? "" : qb.getSearch();
+
+			getComputers.setString(1, "%" + search + "%");
+			getComputers.setString(2, "%" + search + "%");
+
+			getComputers.setInt(3, qb.getOffset());
+			getComputers.setInt(4, qb.getNbRows());
+
 			rs = getComputers.executeQuery();
 
 			while (rs.next()) {
@@ -120,11 +130,19 @@ public class ComputerDAO {
 				p.setCompany(company);
 				computerList.add(p);
 			}
+			
+			connection.commit();
 		} catch (SQLException e) {
-			logger.warn("getComputers() failed with: " + e.getMessage());
-			return null;
+			logger.error("getComputers() failed with: " + e.getMessage());
+			try{
+				logger.error("getComputers() Connection is being rollback()");
+				connection.rollback();
+			}
+			catch(SQLException exception) {
+				logger.error("getComputers() failed with: " + exception.getMessage());
+			}
 		} finally {
-			DAOFactory.closeObject(connection, rs, getComputers);
+			DAOFactory.INSTANCE.closeObject(connection, rs, getComputers);
 		}
 
 		logger.debug("getComputers() successful");
@@ -134,40 +152,37 @@ public class ComputerDAO {
 	public boolean addComputer(Computer c) {
 		logger.debug("addComputer(" + c + ")");
 		PreparedStatement insertComputer = null;
-		Connection connection = DAOFactory.getConnection();
+		Connection connection = DAOFactory.INSTANCE.getConnection();
 		boolean results = false;
 		
 		try {
+			connection.setAutoCommit(false);
+			
 			insertComputer = connection.prepareStatement("INSERT INTO computer values(null,?,?,?,?)");
 			insertComputer.setString(1, c.getName());
-			
-			if( c.getIntroduced() == null ) {
-				insertComputer.setNull(2, Types.NULL);
-			}
-			else {
-				insertComputer.setTimestamp(2, c.getIntroduced());
-			}
-			
-			if( c.getDiscontinued() == null ) {
-				insertComputer.setNull(3, Types.NULL);
-			}
-			else {
-				insertComputer.setTimestamp(3, c.getDiscontinued());
-			}
-						
+			insertComputer.setTimestamp(2, c.getIntroduced());
+			insertComputer.setTimestamp(3, c.getDiscontinued());
+
 			if( c.getCompany() == null ) {
 				insertComputer.setNull(4, Types.NULL);
 			}
 			else {
 				insertComputer.setInt(4, c.getCompany().getId());
 			}
-
+			
 			results = insertComputer.execute();
+			connection.commit();
+			LogDAO.getInstance().addLog("Computer added with id: " + c.getId());
 		} catch (SQLException e) {
-			logger.warn("addComputer(" + c + ") failed with: " +e.getMessage());
-			return false;
+			logger.error("addComputer(" + c + ") failed with: " + e.getMessage());
+			try {
+				logger.error("addComputer(" + c + ") Connection is being rollback()");
+				connection.rollback();
+			} catch (SQLException exception) {
+				logger.error("addComputer(" + c + ") failed with: "  + exception.getMessage());
+			}
 		} finally {
-			DAOFactory.closeObject(connection, null, insertComputer);
+			DAOFactory.INSTANCE.closeObject(connection, null, insertComputer);
 		}
 
 		logger.debug("addComputer(" + c + ") successful");
@@ -176,14 +191,18 @@ public class ComputerDAO {
 	
 	public int updateComputer(Computer c) {
 		logger.debug("updateComputer(" + c + ")");
+		Connection connection = DAOFactory.INSTANCE.getConnection();
+
 		PreparedStatement updateComputer = null;
-		Connection connection = DAOFactory.getConnection();
+
+		StringBuilder sb = new StringBuilder();
+		sb.append("UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? ");
+		sb.append("WHERE id = ? ");
+
 		int results = 0;
 		try {
-			updateComputer = connection.prepareStatement(
-						"UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? "
-					+ 	"WHERE id = ?");
-			
+			connection.setAutoCommit(false);
+			updateComputer = connection.prepareStatement(sb.toString());
 			updateComputer.setString(1, c.getName());
 			updateComputer.setTimestamp(2, c.getIntroduced());
 			updateComputer.setTimestamp(3, c.getDiscontinued());
@@ -198,11 +217,17 @@ public class ComputerDAO {
 			updateComputer.setInt(5, c.getId());
 			
 			results = updateComputer.executeUpdate();
+			connection.commit();
 		} catch(SQLException e) {
-			logger.warn("updateComputer(" + c + ") failed with: " + e.getMessage());
-			return 0;
+			logger.error("updateComputer(" + c + ") failed with: " + e.getMessage());
+			try {
+				logger.error("updateComputer(" + c + ") Connection is being rollback()");
+				connection.rollback();
+			} catch (SQLException exception) {
+				logger.error("updateComputer(" + c + ") failed with: " + e.getMessage());
+			}
 		} finally {
-			DAOFactory.closeObject(connection, null, updateComputer);
+			DAOFactory.INSTANCE.closeObject(connection, null, updateComputer);
 		}
 	
 		logger.debug("updateComputer(" + c + ") successful");	
@@ -213,21 +238,30 @@ public class ComputerDAO {
 	public boolean deleteComputer(int id) {
 		logger.debug("deleteComputer(" + id + ")");
 		PreparedStatement deleteComputer = null;
-		Connection connection = DAOFactory.getConnection();
+		Connection connection = DAOFactory.INSTANCE.getConnection();
+		
+		StringBuilder sb = new StringBuilder();
+		sb.append("DELETE FROM computer ");
+		sb.append("WHERE id = ?");
+		
 		boolean returnz = false;
 		try {
-			deleteComputer = connection.prepareStatement(
-					"DELETE FROM computer "
-				+	"WHERE id = ?");
+			deleteComputer = connection.prepareStatement(sb.toString());
 			deleteComputer.setInt(1, id);
 			returnz = deleteComputer.execute();
 		}
 		catch(SQLException e) {
-			logger.warn("deleteComputer(" + id + ") failed with: " + e.getMessage());
-			return false;
+			logger.error("deleteComputer(" + id + ") failed with: " + e.getMessage());
+			try {
+				logger.error("deleteComputer(" + id + ") Connection is being rollback()");
+				connection.rollback();
+			}
+			catch(SQLException exception) {
+				logger.error("deleteComputer(" + id + ") failed with: " + e.getMessage());	
+			}
 		}
 		finally {
-			DAOFactory.closeObject(connection, null, deleteComputer);
+			DAOFactory.INSTANCE.closeObject(connection, null, deleteComputer);
 		}
 		
 		logger.debug("deleteComputer(" + id + ") successful");
@@ -236,34 +270,49 @@ public class ComputerDAO {
 
 	public int getTotalComputers(QueryBuilder qb) {
 		logger.debug("getTotalComputers(" + qb + ")");
-		Connection connection = DAOFactory.getConnection();
+		Connection connection = DAOFactory.INSTANCE.getConnection();
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT count(computer.id) ");
 		sb.append("FROM computer ");
 		sb.append("LEFT JOIN company ON computer.company_id = company.id ");
+		sb.append("WHERE computer.name LIKE ? OR company.name LIKE ? ");
 		
-		String search = (qb.getSearch() == null )? "" : qb.getSearch();
-		if( !search.isEmpty() ) {
-			sb.append("WHERE computer.name LIKE '%" + search + "%' OR company.name LIKE '%" + search + "%' ");
+		String field = (qb.getField() == null)? ComputerField.NAME.getName() : qb.getField();
+		if( qb.getDirection() ) {
+			sb.append(String.format("ORDER BY %s DESC ", field));
+		}
+		else {
+			sb.append(String.format("ORDER BY %s ", field));
 		}
 
 		PreparedStatement getComputers = null;
 		ResultSet rs = null;
 		int results = 0;
 		try {
+			connection.setAutoCommit(false);
 			getComputers = connection.prepareStatement(sb.toString());
 			
+			String search = (qb.getSearch() == null)? "" : qb.getSearch();
+
+			getComputers.setString(1, "%" + search + "%");
+			getComputers.setString(2, "%" + search + "%");
+
 			rs = getComputers.executeQuery();
 			rs.next();
 			results =  rs.getInt(1);
 			
+			connection.commit();
 		} catch (SQLException e) {
-			logger.warn("getTotalComputers() failed with: " + e.getMessage());
-			logger.warn("REQ : " + getComputers);
-			return 0;
+			logger.error("getTotalComputers() failed with: " + e.getMessage());
+			try {
+				logger.error("getTotalComputers() Connection is being rollback()");
+				connection.rollback();
+			} catch (SQLException exception) {
+				logger.error("getTotalComputers() failed with: " + e.getMessage());
+			}
 		} finally {
-			DAOFactory.closeObject(connection, rs, getComputers);
+			DAOFactory.INSTANCE.closeObject(connection, rs, getComputers);
 		}
 
 		logger.debug("getTotalComputers() successful");

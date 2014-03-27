@@ -62,7 +62,19 @@ public class DashboardServlet extends HttpServlet {
 		// QUERY TO SEND
 		QueryBuilder qb = new QueryBuilder();
 		qb.setSearch(search);
-		qb.setField((fieldSort != null)? ComputerField.valueOf(fieldSort).getName() : ComputerField.NAME.getName() );
+		String field;
+		try {
+			if( fieldSort != null ) {
+				field = ComputerField.valueOf(fieldSort).getName();
+			}
+			else {
+				field = ComputerField.NAME.getName();
+			}
+		}
+		catch(IllegalArgumentException e) {
+			field = ComputerField.NAME.getName();
+		}
+		qb.setField(field);
 		qb.setOffset((currentPage - 1) * RESULS_PER_PAGE);
 		qb.setNbRows(RESULS_PER_PAGE);
 		
@@ -80,8 +92,6 @@ public class DashboardServlet extends HttpServlet {
 			nbComputers = computerService.getTotalComputers(qb);
 			computerList = computerWrapper.getComputers();
 
-			req.setAttribute("search", search);
-			
 			Map<ComputerField, String> computerFieldSort = new HashMap<>();
 			ComputerField[] computerField = ComputerField.values();
 			for(int i = 0 ; i < computerField.length ; i++ ) {
@@ -92,6 +102,7 @@ public class DashboardServlet extends HttpServlet {
 				else computerFieldSort.put(computerField[i], "ASC");
 			}
 			
+			req.setAttribute("search", search);
 			req.setAttribute("computerField", computerField);
 			req.setAttribute("computerFieldSort", computerFieldSort);
 			req.setAttribute("currentPage", currentPage);

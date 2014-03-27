@@ -57,22 +57,39 @@ public class AddComputerServlet extends HttpServlet {
 		String pDiscontinued = req.getParameter("discontinued");
 		String pCompanyId = req.getParameter("company");
 		
+		
+		// VALIDATION BACK
+		boolean validation = true;
 		if( pName == null || pName.length() < 2 ) {
-			getServletContext().getRequestDispatcher("/WEB-INF/addComputer.jsp").forward(req, resp);
+			req.setAttribute("name", true);
+			validation = false;
+		}
+
+		int companyId = 0;
+		try {
+			companyId = Integer.parseInt(pCompanyId);
+		}
+		catch(NumberFormatException e) {
+			req.setAttribute("companyId", true);
+			validation = false;
 		}
 		
 		Timestamp introduced = (pIntroduced != null && !pIntroduced.equals(""))? Timestamp.valueOf(pIntroduced + " 00:00:00") : null;
 		Timestamp discontinued = (pDiscontinued != null && !pDiscontinued.equals(""))? Timestamp.valueOf(pDiscontinued + " 00:00:00") : null;
 
-		Computer c = new Computer();
-		c.setName(pName);
-		c.setIntroduced(introduced);
-		c.setDiscontinued(discontinued);
-		c.setCompany(companyService.getCompany(Integer.parseInt(pCompanyId)));
-
-		computerService.addComputer(c);
-		
-		req.setAttribute("computerAdded", true);
-		getServletContext().getRequestDispatcher("/computers").forward(req, resp);
+		if( validation ) {
+			Computer c = new Computer();
+			c.setName(pName);
+			c.setIntroduced(introduced);
+			c.setDiscontinued(discontinued);
+			c.setCompany(companyService.getCompany(companyId));
+			
+			computerService.addComputer(c);
+			req.setAttribute("computerAdded", true);
+			getServletContext().getRequestDispatcher("/computers").forward(req, resp);
+		}
+		else {
+			getServletContext().getRequestDispatcher("/WEB-INF/addComputer.jsp").forward(req, resp);
+		}
 	}
 }

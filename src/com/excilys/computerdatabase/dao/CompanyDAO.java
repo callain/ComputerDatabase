@@ -16,22 +16,22 @@ public class CompanyDAO {
 	
 	final Logger logger = LoggerFactory.getLogger(CompanyDAO.class);
 	
-	private static CompanyDAO CompanyDAO;
+	private static CompanyDAO companyDAO;
 
 	private CompanyDAO() {
 	}
 
 	public static CompanyDAO getInstance() {
-		if (CompanyDAO != null)
-			return CompanyDAO;
+		if (companyDAO != null)
+			return companyDAO;
 
-		CompanyDAO = new CompanyDAO();
-		return CompanyDAO;
+		companyDAO = new CompanyDAO();
+		return companyDAO;
 	}
 
 	public Company getCompany(int id) {
 		logger.debug("getCompany(" + id + ")");
-		Connection connection = DAOFactory.getConnection();
+		Connection connection = DAOFactory.INSTANCE.getConnection();
 		PreparedStatement getCompany = null;
 		ResultSet rs = null;
 		Company p;
@@ -52,7 +52,7 @@ public class CompanyDAO {
 		} catch (SQLException e) {
 			logger.warn("getCompany(" + id + ") failed with: " + e.getMessage());
 		} finally {
-			DAOFactory.closeObject(connection, rs, getCompany);
+			DAOFactory.INSTANCE.closeObject(connection, rs, getCompany);
 		}
 
 		return null;
@@ -60,7 +60,7 @@ public class CompanyDAO {
 
 	public List<Company> getCompanies() {
 		logger.debug("getCompanies()");
-		Connection connection = DAOFactory.getConnection();
+		Connection connection = DAOFactory.INSTANCE.getConnection();
 
 		PreparedStatement getCompanies = null;
 		ResultSet rs = null;
@@ -82,7 +82,7 @@ public class CompanyDAO {
 		} catch (SQLException e) {
 			logger.warn("getCompanies() failed with: " + e.getMessage());
 		} finally {
-			DAOFactory.closeObject(connection, rs, getCompanies);
+			DAOFactory.INSTANCE.closeObject(connection, rs, getCompanies);
 		}
 
 		return null;
@@ -91,7 +91,7 @@ public class CompanyDAO {
 	public boolean addCompany(Company p) {
 		logger.debug("addCompany(" + p + ")");
 		PreparedStatement insertCompany = null;
-		Connection connection = DAOFactory.getConnection();
+		Connection connection = DAOFactory.INSTANCE.getConnection();
 
 		try {
 			insertCompany = connection.prepareStatement("INSERT INTO company values(null,?)");
@@ -102,7 +102,7 @@ public class CompanyDAO {
 		} catch (SQLException e) {
 			logger.warn("addCompany() failed with: " + e.getMessage());
 		} finally {
-			DAOFactory.closeObject(connection, null, insertCompany);
+			DAOFactory.INSTANCE.closeObject(connection, null, insertCompany);
 		}
 
 		return false;

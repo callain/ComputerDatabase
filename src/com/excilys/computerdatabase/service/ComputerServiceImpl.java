@@ -19,8 +19,8 @@ public class ComputerServiceImpl implements ComputerService{
 	}
 
 	@Override
-	public boolean addComputer(Computer p) {
-		return computerDAO.addComputer(p);
+	public boolean addComputer(Computer c) {
+		return computerDAO.addComputer(c);
 	}
 
 	@Override

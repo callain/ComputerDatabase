@@ -13,21 +13,36 @@ import javax.sql.DataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class DAOFactory {
+import com.jolbox.bonecp.BoneCPDataSource;
 
-	public static Connection getConnection() {
+public enum DAOFactory {
+
+	INSTANCE;
+	
+	private BoneCPDataSource boneCP = new BoneCPDataSource();
+	final Logger logger = LoggerFactory.getLogger(DAOFactory.class);
+	
+	{
+		Context ctx;
+		DataSource ds;
+		try {
+			ctx = new InitialContext();
+			ds = (DataSource) ctx.lookup("java:/comp/env/jdbc/computer");
+			boneCP.setDatasourceBean(ds);
+		} catch (NamingException e) {
+			logger.debug("Connection failed with: " + e.getMessage());
+		}
+
+		logger.debug("Connection successful...");
+	}
+	
+	
+	public Connection getConnection() {
 		Logger logger = LoggerFactory.getLogger(DAOFactory.class);
 		logger.debug("Connection creation...");
 		
-		Context ctx;
 		try {
-			ctx = new InitialContext();
-			DataSource ds = (DataSource) ctx.lookup("java:/comp/env/jdbc/computer");
-			logger.debug("Connection successful...");
-			
-			return ds.getConnection();
-		} catch (NamingException e) {
-			logger.debug("Connection failed with: " + e.getMessage());
+			return boneCP.getConnection();
 		} catch (SQLException e) {
 			logger.debug("Connection failed with: " + e.getMessage());
 		}
@@ -35,7 +50,7 @@ public class DAOFactory {
 		return null;
 	}
 
-	public static void closeObject(Connection co, ResultSet rs, PreparedStatement st) {
+	public void closeObject(Connection co, ResultSet rs, PreparedStatement st) {
 		Logger logger = LoggerFactory.getLogger(DAOFactory.class);
 		logger.debug("Closing connection, resultset, preparedStatement...");
 		try {
