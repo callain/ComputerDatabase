@@ -18,12 +18,14 @@ import com.excilys.computerdatabase.dao.QueryBuilder;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.ComputerWrapper;
 import com.excilys.computerdatabase.service.ComputerService;
-import com.excilys.computerdatabase.service.ServiceFactory;
+import com.excilys.computerdatabase.service.ComputerServiceImpl;
 
 public class DashboardServlet extends HttpServlet {
-	final Logger logger = LoggerFactory.getLogger(DashboardServlet.class);
+	
+	private static final Logger logger = LoggerFactory.getLogger(DashboardServlet.class);
 
 	private static final long serialVersionUID = 1643759483804088905L;
+	
 	private static ComputerService computerService;
 	private static final int RESULS_PER_PAGE = 12;
 	private int currentPage = 1;
@@ -32,7 +34,7 @@ public class DashboardServlet extends HttpServlet {
 	public void init() throws ServletException {
 		super.init();
 		logger.debug("DashboardServlet.init()");
-		computerService = ServiceFactory.getComputerService();
+		computerService = ComputerServiceImpl.INSTANCE;
 	}
 	
 	@Override
@@ -74,13 +76,11 @@ public class DashboardServlet extends HttpServlet {
 		catch(IllegalArgumentException e) {
 			field = ComputerField.NAME.getName();
 		}
+		
 		qb.setField(field);
 		qb.setOffset((currentPage - 1) * RESULS_PER_PAGE);
 		qb.setNbRows(RESULS_PER_PAGE);
-		
-		if( orderBy != null && !orderBy.isEmpty() && orderBy.equals("ASC") ) {
-			qb.setDirection(true);
-		}
+		qb.setDirection("ASC".equals(orderBy));
 
 		// CALL computerService if available
 		if (computerService != null) {

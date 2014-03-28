@@ -2,8 +2,6 @@ package com.excilys.computerdatabase.servlet;
 
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -18,8 +16,9 @@ import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.CompanyWrapper;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.service.CompanyService;
+import com.excilys.computerdatabase.service.CompanyServiceImpl;
 import com.excilys.computerdatabase.service.ComputerService;
-import com.excilys.computerdatabase.service.ServiceFactory;
+import com.excilys.computerdatabase.service.ComputerServiceImpl;
 
 public class EditComputerServlet extends HttpServlet {
 	final Logger logger = LoggerFactory.getLogger(EditComputerServlet.class);
@@ -33,8 +32,8 @@ public class EditComputerServlet extends HttpServlet {
 		super.init();
 		logger.debug("EditComputerServlet.init()");
 		
-		computerService = ServiceFactory.getComputerService();
-		companyService = ServiceFactory.getCompanyService();
+		computerService = ComputerServiceImpl.INSTANCE;
+		companyService = CompanyServiceImpl.INSTANCE;
 	}
 
 	@Override
@@ -61,7 +60,6 @@ public class EditComputerServlet extends HttpServlet {
 		if (companyService != null) {
 			CompanyWrapper companyWrapper = companyService.getCompanies();
 			List<Company> companyList = companyWrapper.getCompanies();
-			Collections.sort(companyList);
 			req.setAttribute("companies", companyList);
 		}
 

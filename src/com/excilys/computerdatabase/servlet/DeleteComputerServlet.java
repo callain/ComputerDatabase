@@ -11,10 +11,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.excilys.computerdatabase.service.ComputerService;
-import com.excilys.computerdatabase.service.ServiceFactory;
+import com.excilys.computerdatabase.service.ComputerServiceImpl;
 
 public class DeleteComputerServlet extends HttpServlet {
-	final Logger logger = LoggerFactory.getLogger(DeleteComputerServlet.class);
+	private static final Logger logger = LoggerFactory.getLogger(DeleteComputerServlet.class);
 
 	private static final long serialVersionUID = 1643759483804088905L;
 	private static ComputerService computerService;
@@ -25,7 +25,7 @@ public class DeleteComputerServlet extends HttpServlet {
 		super.init();
 		logger.debug("DeleteComputerServlet.init()");
 		
-		computerService = ServiceFactory.getComputerService();
+		computerService = ComputerServiceImpl.INSTANCE;
 	}
 	
 	@Override
@@ -39,7 +39,7 @@ public class DeleteComputerServlet extends HttpServlet {
 				computerId = Integer.parseInt(id);
 			}
 			catch(NumberFormatException e) {
-				logger.warn("EditComputerServlet invalid computer id failed with: " + e.getMessage());
+				logger.error("EditComputerServlet invalid computer id failed with: " + e.getMessage());
 				resp.sendRedirect("computers");
 			}
 		}

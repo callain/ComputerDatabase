@@ -61,4 +61,16 @@ public class QueryBuilder {
 	public void setDirection(boolean direction) {
 		this.direction = direction;
 	}
+	
+	public String toString() {
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append("Search: " + search);
+		sb.append(", Field: " + field);
+		sb.append(", Offset: " + offset);
+		sb.append(", NbRows: " + nbRows);
+		sb.append(", Direction: " + direction);
+		
+		return sb.toString();
+	}
 }
