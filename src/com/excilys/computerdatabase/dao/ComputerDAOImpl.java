@@ -114,14 +114,14 @@ public enum ComputerDAOImpl implements ComputerDAO {
 		return computerList;
 	}
 
-	public boolean addComputer(Computer c) throws SQLException {
+	public int addComputer(Computer c) throws SQLException {
 		logger.debug("addComputer(" + c + ")");
 		
 		PreparedStatement insertComputer = null;
 		Connection connection = ConnectionFactory.INSTANCE.getConnection();
-		boolean results = false;
+		int results = 0;
 		
-		insertComputer = connection.prepareStatement("INSERT INTO computer values(null,?,?,?,?)");
+		insertComputer = connection.prepareStatement("INSERT INTO computer values(null,?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS);
 		insertComputer.setString(1, c.getName());
 		insertComputer.setTimestamp(2, c.getIntroduced());
 		insertComputer.setTimestamp(3, c.getDiscontinued());
@@ -133,8 +133,11 @@ public enum ComputerDAOImpl implements ComputerDAO {
 			insertComputer.setInt(4, c.getCompany().getId());
 		}
 		
-		results = insertComputer.execute();
-		LogDAOImpl.INSTANCE.addLog("Computer added with id: " + c.getId());
+		insertComputer.execute();
+		ResultSet rs = insertComputer.getGeneratedKeys();
+		rs.next();
+		results = rs.getInt(1);
+		rs.close();
 		insertComputer.close();
 
 		logger.debug("addComputer(" + c + ") successful");

@@ -61,18 +61,17 @@ public enum ComputerServiceImpl implements ComputerService{
 	}
 
 	@Override
-	public boolean addComputer(Computer c)
+	public int addComputer(Computer c)
 	{
-		boolean computerAdded = false;
-		boolean logAdded = false;
+		int computerId = 0;
 		
 		Connection connection = ConnectionFactory.INSTANCE.getConnection();
 		try
 		{
 			connection.setAutoCommit(false);
 			
-			computerAdded = computerDAO.addComputer(c);
-			logAdded = logDAO.addLog("Computer added");
+			computerId = computerDAO.addComputer(c);
+			logDAO.addLog("Computer added with id: " + computerId);
 			
 			connection.commit();
 		}
@@ -94,7 +93,7 @@ public enum ComputerServiceImpl implements ComputerService{
 			ConnectionFactory.INSTANCE.closeConnection();
 		}
 		
-		return computerAdded && logAdded;
+		return computerId;
 	}
 
 	@Override
@@ -107,7 +106,7 @@ public enum ComputerServiceImpl implements ComputerService{
 			connection.setAutoCommit(false);
 		
 			computerUpdated = computerDAO.updateComputer(c);
-			logDAO.addLog("Computer updated");
+			logDAO.addLog("Computer update with id: " + c.getId());
 			
 			connection.commit();
 		}
@@ -143,7 +142,7 @@ public enum ComputerServiceImpl implements ComputerService{
 			connection.setAutoCommit(false);
 			
 			computerDAO.deleteComputer(id);
-			logDAO.addLog("Computer deleted");
+			logDAO.addLog("Computer deleted with id: " + id);
 			
 			connection.commit();
 		}

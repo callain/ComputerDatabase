@@ -9,7 +9,7 @@ public interface ComputerDAO {
 	public Computer getComputer(int id) throws SQLException;
 	public List<Computer> getComputers(QueryBuilder qb) throws SQLException;
 	public int getTotalComputers(QueryBuilder qb) throws SQLException;
-	public boolean addComputer(Computer c) throws SQLException;
+	public int addComputer(Computer c) throws SQLException;
 	public int updateComputer(Computer c) throws SQLException;
 	public boolean deleteComputer(int id) throws SQLException;
 }
