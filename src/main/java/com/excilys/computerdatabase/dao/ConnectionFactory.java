@@ -35,31 +35,51 @@ public enum ConnectionFactory {
 		}
 	}
 	
-	private final ThreadLocal<Connection> connection = new ThreadLocal<Connection>(){
+	private final ThreadLocal<Connection> connection = new ThreadLocal<Connection>()
+	{
 		@Override  
-	 	protected Connection initialValue() {  
-			try {
+	 	protected Connection initialValue()
+		{  
+			try
+			{
 				return boneCP.getConnection();
-			} catch (SQLException e) {
-					
+			}
+			catch (SQLException e)
+			{
+				logger.error("Can't get a new connection: " + e.getMessage());
 			}
 			return null;
-		} 
+		}
 	};
 	
 	public Connection getConnection() {
-		Logger logger = LoggerFactory.getLogger(ConnectionFactory.class);
 		logger.debug("getConnection()");
-
-		try {
-			if( connection.get() == null ) {
-				connection.set(boneCP.getConnection());
-			}
-		} catch (SQLException e) {
-			logger.debug("getConnection() failed with: " + e.getMessage());
-		}
-    	
 		return connection.get();
+	}
+	
+	public void startTransaction() {
+		try {
+			getConnection().setAutoCommit(false);
+		} catch (SQLException e) {
+			logger.error(e.getMessage());
+		}
+	}
+	
+	public void commitTransaction() {
+		try {
+			getConnection().commit();
+		} catch (SQLException e) {
+			logger.error(e.getMessage());
+		}
+	}
+	
+	public void rollback() {
+		logger.error("Connection is being rollback()");
+		try {
+			getConnection().rollback();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void closeObject(ResultSet rs, PreparedStatement st) {

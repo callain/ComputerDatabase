@@ -1,8 +1,5 @@
 package com.excilys.computerdatabase.service;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +11,7 @@ import com.excilys.computerdatabase.dao.LogDAOImpl;
 import com.excilys.computerdatabase.dao.QueryBuilder;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.ComputerWrapper;
+import com.excilys.computerdatabase.exception.SQLQueryFailException;
 
 public enum ComputerServiceImpl implements ComputerService{
 
@@ -32,25 +30,13 @@ public enum ComputerServiceImpl implements ComputerService{
 	public Computer getComputer(int id)
 	{
 		Computer c = null;
-		Connection connection = ConnectionFactory.INSTANCE.getConnection();
 		try
 		{
-			connection.setAutoCommit(false);
 			c = computerDAO.getComputer(id);
-			connection.commit();
 		}
-		catch(SQLException e)
+		catch(SQLQueryFailException e)
 		{
 			logger.error("getComputer(" + id + ") failed with: " + e.getMessage());
-			try
-			{
-				logger.error("getComputer(" + id + ") Connection is being rollback()");
-				connection.rollback();
-			}
-			catch (SQLException exception)
-			{
-				logger.error("getComputer(" + id + ") failed with: " + exception.getMessage());
-			}
 		}
 		finally
 		{
@@ -65,28 +51,20 @@ public enum ComputerServiceImpl implements ComputerService{
 	{
 		int computerId = 0;
 		
-		Connection connection = ConnectionFactory.INSTANCE.getConnection();
 		try
 		{
-			connection.setAutoCommit(false);
+			ConnectionFactory.INSTANCE.startTransaction();
 			
 			computerId = computerDAO.addComputer(c);
 			logDAO.addLog("Computer added with id: " + computerId);
 			
-			connection.commit();
+			ConnectionFactory.INSTANCE.commitTransaction();
 		}
-		catch(SQLException e)
+		catch(SQLQueryFailException e)
 		{
 			logger.error("addComputer(" + c + ") failed with: " + e.getMessage());
-			try
-			{
-				logger.error("addComputer(" + c + ") Connection is being rollback()");
-				connection.rollback();
-			}
-			catch (SQLException exception)
-			{
-				logger.error("addComputer(" + c + ") failed with: "  + exception.getMessage());
-			}
+			ConnectionFactory.INSTANCE.rollback();
+			throw e;
 		}
 		finally
 		{
@@ -99,29 +77,20 @@ public enum ComputerServiceImpl implements ComputerService{
 	@Override
 	public int updateComputer(Computer c)
 	{
-		Connection connection = ConnectionFactory.INSTANCE.getConnection();
 		int computerUpdated = 0;
 		try
 		{
-			connection.setAutoCommit(false);
+			ConnectionFactory.INSTANCE.startTransaction();
 		
 			computerUpdated = computerDAO.updateComputer(c);
 			logDAO.addLog("Computer update with id: " + c.getId());
 			
-			connection.commit();
+			ConnectionFactory.INSTANCE.commitTransaction();
 		}
-		catch(SQLException e)
+		catch(SQLQueryFailException e)
 		{
 			logger.error("updateComputer(" + c + ") failed with: " + e.getMessage());
-			try
-			{
-				logger.error("updateComputer(" + c + ") Connection is being rollback()");
-				connection.rollback();
-			}
-			catch (SQLException exception)
-			{
-				logger.error("updateComputer(" + c + ") failed with: " + e.getMessage());
-			}
+			ConnectionFactory.INSTANCE.rollback();
 		}
 		finally
 		{
@@ -135,29 +104,19 @@ public enum ComputerServiceImpl implements ComputerService{
 	public boolean deleteComputer(int id)
 	{
 		boolean computerDeleted = false;
-		Connection connection = ConnectionFactory.INSTANCE.getConnection();
-		
 		try
 		{
-			connection.setAutoCommit(false);
+			ConnectionFactory.INSTANCE.startTransaction();
 			
 			computerDAO.deleteComputer(id);
 			logDAO.addLog("Computer deleted with id: " + id);
 			
-			connection.commit();
+			ConnectionFactory.INSTANCE.commitTransaction();
 		}
-		catch(SQLException e)
+		catch(SQLQueryFailException e)
 		{
 			logger.error("deleteComputer(" + id + ") failed with: " + e.getMessage());
-			try
-			{
-				logger.error("deleteComputer(" + id + ") Connection is being rollback()");
-				connection.rollback();
-			}
-			catch(SQLException exception)
-			{
-				logger.error("deleteComputer(" + id + ") failed with: " + e.getMessage());	
-			}
+			ConnectionFactory.INSTANCE.rollback();
 		}
 		finally
 		{
@@ -170,26 +129,14 @@ public enum ComputerServiceImpl implements ComputerService{
 	@Override
 	public ComputerWrapper getComputers(QueryBuilder qb)
 	{
-		Connection connection = ConnectionFactory.INSTANCE.getConnection();
 		ComputerWrapper computerWrapper = null; 
 		try
 		{
-			connection.setAutoCommit(false);
-			
 			computerWrapper = new ComputerWrapper(computerDAO.getComputers(qb));
-
-			connection.commit();
 		}
-		catch (SQLException e)
+		catch (SQLQueryFailException e)
 		{
 			logger.error("getComputers() failed with: " + e.getMessage());
-			try{
-				logger.error("getComputers() Connection is being rollback()");
-				connection.rollback();
-			}
-			catch(SQLException exception) {
-				logger.error("getComputers() failed with: " + exception.getMessage());
-			}
 		} 
 		finally
 		{
@@ -202,28 +149,14 @@ public enum ComputerServiceImpl implements ComputerService{
 	@Override
 	public int getTotalComputers(QueryBuilder qb)
 	{
-		Connection connection = ConnectionFactory.INSTANCE.getConnection();
 		int results = 0;
 		try
 		{
-			connection.setAutoCommit(false);
-			
 			results = computerDAO.getTotalComputers(qb);
-			
-			connection.commit();
 		}
-		catch (SQLException e)
+		catch (SQLQueryFailException e)
 		{
 			logger.error("getTotalComputers() failed with: " + e.getMessage());
-			try
-			{
-				logger.error("getTotalComputers() Connection is being rollback()");
-				connection.rollback();
-			}
-			catch (SQLException exception)
-			{
-				logger.error("getTotalComputers() failed with: " + e.getMessage());
-			}
 		}
 		finally
 		{
