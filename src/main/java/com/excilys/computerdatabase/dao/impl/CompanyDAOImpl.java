@@ -15,6 +15,7 @@ import org.springframework.stereotype.Repository;
 import com.excilys.computerdatabase.dao.CompanyDAO;
 import com.excilys.computerdatabase.dao.ConnectionFactory;
 import com.excilys.computerdatabase.domain.Company;
+import com.excilys.computerdatabase.exception.SQLQueryFailException;
 
 @Repository
 public class CompanyDAOImpl implements CompanyDAO {
@@ -24,31 +25,35 @@ public class CompanyDAOImpl implements CompanyDAO {
 	@Autowired
 	private ConnectionFactory connectionFactory;
 
-	public Company getCompany(int id) throws SQLException {
+	public Company getCompany(int id) {
 		logger.debug("getCompany(" + id + ")");
 		Connection connection = connectionFactory.getConnection();
 		PreparedStatement getCompany = null;
 		ResultSet rs = null;
 		Company p = null;
 
-		getCompany = connection.prepareStatement("SELECT * from company WHERE id = ?");
-		getCompany.setInt(1, id);
-
-		rs = getCompany.executeQuery();
-		rs.next();
-
-		p = new Company();
-		p.setId(rs.getInt("id"));
-		p.setName(rs.getString("name"));
-		
-		rs.close();
-		getCompany.close();
-		
-		logger.debug("getCompany(" + id + ") successful");
+		try {
+			getCompany = connection.prepareStatement("SELECT * from company WHERE id = ?");
+			getCompany.setInt(1, id);
+			
+			rs = getCompany.executeQuery();
+			rs.next();
+			
+			p = new Company();
+			p.setId(rs.getInt("id"));
+			p.setName(rs.getString("name"));
+			
+			logger.debug("getCompany(" + id + ") successful");
+		} catch (SQLException e) {
+			throw new SQLQueryFailException(e);
+		}
+		finally {
+			connectionFactory.closeObject(rs, getCompany);
+		}
 		return p;
 	}
 
-	public List<Company> getCompanies() throws SQLException {
+	public List<Company> getCompanies() {
 		logger.debug("getCompanies()");
 		Connection connection = connectionFactory.getConnection();
 
@@ -56,21 +61,27 @@ public class CompanyDAOImpl implements CompanyDAO {
 		ResultSet rs = null;
 
 		List<Company> companies = new ArrayList<Company>();
-		getCompanies = connection.prepareStatement("SELECT id, name FROM company ORDER BY company.name");
-		rs = getCompanies.executeQuery();
+		try {
+			getCompanies = connection.prepareStatement("SELECT id, name FROM company ORDER BY company.name");
 
-		while (rs.next()) {
-			Company p = new Company();
-			Integer id = rs.getInt("id");
-			p.setId(id);
-			p.setName(rs.getString("name"));
-			companies.add(p);
+			rs = getCompanies.executeQuery();
+			
+			while (rs.next()) {
+				Company p = new Company();
+				Integer id = rs.getInt("id");
+				p.setId(id);
+				p.setName(rs.getString("name"));
+				companies.add(p);
+			}
+
+			logger.debug("getCompanies() successful");
+		} catch (SQLException e) {
+			throw new SQLQueryFailException(e);
+		}
+		finally {
+			connectionFactory.closeObject(rs, getCompanies);
 		}
 		
-		rs.close();
-		getCompanies.close();
-		
-		logger.debug("getCompanies() successful");
 		return companies;
 	}
 }

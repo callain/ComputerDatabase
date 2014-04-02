@@ -1,7 +1,5 @@
 package com.excilys.computerdatabase.service.impl;
 
-import java.sql.SQLException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +9,7 @@ import com.excilys.computerdatabase.dao.ConnectionFactory;
 import com.excilys.computerdatabase.dao.impl.CompanyDAOImpl;
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.CompanyWrapper;
+import com.excilys.computerdatabase.exception.SQLQueryFailException;
 import com.excilys.computerdatabase.service.CompanyService;
 
 @Service("companyService")
@@ -32,11 +31,11 @@ public class CompanyServiceImpl implements CompanyService {
 		try
 		{
 			c = companyDAO.getCompany(id);
-			logger.debug("getCompany(" + id + ") successful");
 		}
-		catch (SQLException e)
+		catch (SQLQueryFailException e)
 		{
 			logger.error("getCompany(" + id + ") failed with: " + e.getMessage());
+			throw e;
 		}
 		finally
 		{
@@ -54,11 +53,11 @@ public class CompanyServiceImpl implements CompanyService {
 		try
 		{
 			computerWrapper = new CompanyWrapper(companyDAO.getCompanies());
-			logger.debug("getCompanies() sucessful");
 		}
-		catch(SQLException e)
+		catch(SQLQueryFailException e)
 		{
 			logger.error("getCompanies() failed with: " + e.getMessage() );
+			throw e;
 		}
 		finally
 		{

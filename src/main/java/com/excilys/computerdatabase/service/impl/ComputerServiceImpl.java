@@ -39,6 +39,7 @@ public class ComputerServiceImpl implements ComputerService{
 		catch(SQLQueryFailException e)
 		{
 			logger.error("getComputer(" + id + ") failed with: " + e.getMessage());
+			throw e;
 		}
 		finally
 		{
@@ -93,6 +94,7 @@ public class ComputerServiceImpl implements ComputerService{
 		{
 			logger.error("updateComputer(" + c + ") failed with: " + e.getMessage());
 			connectionFactory.rollback();
+			throw e;
 		}
 		finally
 		{
@@ -119,6 +121,7 @@ public class ComputerServiceImpl implements ComputerService{
 		{
 			logger.error("deleteComputer(" + id + ") failed with: " + e.getMessage());
 			connectionFactory.rollback();
+			throw e;
 		}
 		finally
 		{
@@ -139,6 +142,7 @@ public class ComputerServiceImpl implements ComputerService{
 		catch (SQLQueryFailException e)
 		{
 			logger.error("getComputers() failed with: " + e.getMessage());
+			throw e;
 		} 
 		finally
 		{
@@ -159,6 +163,7 @@ public class ComputerServiceImpl implements ComputerService{
 		catch (SQLQueryFailException e)
 		{
 			logger.error("getTotalComputers() failed with: " + e.getMessage());
+			throw e;
 		}
 		finally
 		{
