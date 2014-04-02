@@ -12,21 +12,24 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.excilys.computerdatabase.dao.ComputerField;
 import com.excilys.computerdatabase.dao.QueryBuilder;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.ComputerWrapper;
 import com.excilys.computerdatabase.service.ComputerService;
-import com.excilys.computerdatabase.service.ComputerServiceImpl;
 
 public class DashboardServlet extends HttpServlet {
 	
 	private static final Logger logger = LoggerFactory.getLogger(DashboardServlet.class);
-
 	private static final long serialVersionUID = 1643759483804088905L;
 	
-	private static ComputerService computerService;
+	@Autowired
+	private ComputerService computerService;
+	
+	// PAGE
 	private static final int RESULS_PER_PAGE = 12;
 	private int currentPage = 1;
 	
@@ -34,7 +37,7 @@ public class DashboardServlet extends HttpServlet {
 	public void init() throws ServletException {
 		super.init();
 		logger.debug("DashboardServlet.init()");
-		computerService = ComputerServiceImpl.INSTANCE;
+		SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 	}
 	
 	@Override

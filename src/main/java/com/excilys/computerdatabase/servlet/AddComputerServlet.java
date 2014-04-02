@@ -11,28 +11,30 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.CompanyWrapper;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.service.CompanyService;
-import com.excilys.computerdatabase.service.CompanyServiceImpl;
 import com.excilys.computerdatabase.service.ComputerService;
-import com.excilys.computerdatabase.service.ComputerServiceImpl;
 
 public class AddComputerServlet extends HttpServlet {
 	private static final Logger logger = LoggerFactory.getLogger(AddComputerServlet.class);
-	
 	private static final long serialVersionUID = 6136920948547853091L;
-	private static ComputerService computerService;
-	private static CompanyService companyService;
+	
+	@Autowired
+	private ComputerService computerService;
+	
+	@Autowired
+	private CompanyService companyService;
 	
 	@Override
 	public void init() throws ServletException {
 		super.init();
 		logger.debug("AddComputerServlet.init()");
-		computerService = ComputerServiceImpl.INSTANCE;
-		companyService = CompanyServiceImpl.INSTANCE;
+		SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 	}
 
 	@Override

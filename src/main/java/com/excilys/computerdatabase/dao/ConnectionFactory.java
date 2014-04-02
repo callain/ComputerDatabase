@@ -12,13 +12,13 @@ import javax.sql.DataSource;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import com.jolbox.bonecp.BoneCPDataSource;
 
-public enum ConnectionFactory {
+@Component
+public class ConnectionFactory {
 
-	INSTANCE;
-	
 	private BoneCPDataSource boneCP  = new BoneCPDataSource();
 	final Logger logger = LoggerFactory.getLogger(ConnectionFactory.class);
 	

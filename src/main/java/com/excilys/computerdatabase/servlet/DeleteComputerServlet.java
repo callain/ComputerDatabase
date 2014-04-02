@@ -9,23 +9,24 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.excilys.computerdatabase.service.ComputerService;
-import com.excilys.computerdatabase.service.ComputerServiceImpl;
 
 public class DeleteComputerServlet extends HttpServlet {
 	private static final Logger logger = LoggerFactory.getLogger(DeleteComputerServlet.class);
 
 	private static final long serialVersionUID = 1643759483804088905L;
-	private static ComputerService computerService;
 	
+	@Autowired
+	private ComputerService computerService;
 	
 	@Override
 	public void init() throws ServletException {
 		super.init();
 		logger.debug("DeleteComputerServlet.init()");
-		
-		computerService = ComputerServiceImpl.INSTANCE;
+		SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
 	}
 	
 	@Override

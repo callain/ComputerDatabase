@@ -1,31 +1,33 @@
-package com.excilys.computerdatabase.service;
+package com.excilys.computerdatabase.service.impl;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import com.excilys.computerdatabase.dao.ComputerDAO;
-import com.excilys.computerdatabase.dao.ComputerDAOImpl;
 import com.excilys.computerdatabase.dao.ConnectionFactory;
-import com.excilys.computerdatabase.dao.LogDAO;
-import com.excilys.computerdatabase.dao.LogDAOImpl;
 import com.excilys.computerdatabase.dao.QueryBuilder;
+import com.excilys.computerdatabase.dao.impl.ComputerDAOImpl;
+import com.excilys.computerdatabase.dao.impl.LogDAOImpl;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.ComputerWrapper;
 import com.excilys.computerdatabase.exception.SQLQueryFailException;
+import com.excilys.computerdatabase.service.ComputerService;
 
-public enum ComputerServiceImpl implements ComputerService{
+@Service("computerService")
+public class ComputerServiceImpl implements ComputerService{
 
-	INSTANCE;
-	
 	private static final Logger logger = LoggerFactory.getLogger(ComputerServiceImpl.class);
-	private ComputerDAO computerDAO;
-	private LogDAO logDAO;
 	
-	{
-		computerDAO = ComputerDAOImpl.INSTANCE;
-		logDAO = LogDAOImpl.INSTANCE;
-	}
+	@Autowired
+	private ComputerDAOImpl computerDAO;
 	
+	@Autowired
+	private LogDAOImpl logDAO;
+	
+	@Autowired
+	private ConnectionFactory connectionFactory;
+
 	@Override
 	public Computer getComputer(int id)
 	{
@@ -40,7 +42,7 @@ public enum ComputerServiceImpl implements ComputerService{
 		}
 		finally
 		{
-			ConnectionFactory.INSTANCE.closeConnection();
+			connectionFactory.closeConnection();
 		}
 		
 		return c;
@@ -53,22 +55,22 @@ public enum ComputerServiceImpl implements ComputerService{
 		
 		try
 		{
-			ConnectionFactory.INSTANCE.startTransaction();
+			connectionFactory.startTransaction();
 			
 			computerId = computerDAO.addComputer(c);
 			logDAO.addLog("Computer added with id: " + computerId);
 			
-			ConnectionFactory.INSTANCE.commitTransaction();
+			connectionFactory.commitTransaction();
 		}
 		catch(SQLQueryFailException e)
 		{
 			logger.error("addComputer(" + c + ") failed with: " + e.getMessage());
-			ConnectionFactory.INSTANCE.rollback();
+			connectionFactory.rollback();
 			throw e;
 		}
 		finally
 		{
-			ConnectionFactory.INSTANCE.closeConnection();
+			connectionFactory.closeConnection();
 		}
 		
 		return computerId;
@@ -80,21 +82,21 @@ public enum ComputerServiceImpl implements ComputerService{
 		int computerUpdated = 0;
 		try
 		{
-			ConnectionFactory.INSTANCE.startTransaction();
+			connectionFactory.startTransaction();
 		
 			computerUpdated = computerDAO.updateComputer(c);
 			logDAO.addLog("Computer update with id: " + c.getId());
 			
-			ConnectionFactory.INSTANCE.commitTransaction();
+			connectionFactory.commitTransaction();
 		}
 		catch(SQLQueryFailException e)
 		{
 			logger.error("updateComputer(" + c + ") failed with: " + e.getMessage());
-			ConnectionFactory.INSTANCE.rollback();
+			connectionFactory.rollback();
 		}
 		finally
 		{
-			ConnectionFactory.INSTANCE.closeConnection();
+			connectionFactory.closeConnection();
 		}
 		
 		return computerUpdated;
@@ -106,21 +108,21 @@ public enum ComputerServiceImpl implements ComputerService{
 		boolean computerDeleted = false;
 		try
 		{
-			ConnectionFactory.INSTANCE.startTransaction();
+			connectionFactory.startTransaction();
 			
 			computerDAO.deleteComputer(id);
 			logDAO.addLog("Computer deleted with id: " + id);
 			
-			ConnectionFactory.INSTANCE.commitTransaction();
+			connectionFactory.commitTransaction();
 		}
 		catch(SQLQueryFailException e)
 		{
 			logger.error("deleteComputer(" + id + ") failed with: " + e.getMessage());
-			ConnectionFactory.INSTANCE.rollback();
+			connectionFactory.rollback();
 		}
 		finally
 		{
-			ConnectionFactory.INSTANCE.closeConnection();
+			connectionFactory.closeConnection();
 		}
 		
 		return computerDeleted;
@@ -140,7 +142,7 @@ public enum ComputerServiceImpl implements ComputerService{
 		} 
 		finally
 		{
-			ConnectionFactory.INSTANCE.closeConnection();
+			connectionFactory.closeConnection();
 		}
 		
 		return computerWrapper;
@@ -160,7 +162,7 @@ public enum ComputerServiceImpl implements ComputerService{
 		}
 		finally
 		{
-			ConnectionFactory.INSTANCE.closeConnection();
+			connectionFactory.closeConnection();
 		}
 		
 		return results;

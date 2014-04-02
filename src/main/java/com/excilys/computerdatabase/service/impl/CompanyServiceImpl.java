@@ -1,25 +1,28 @@
-package com.excilys.computerdatabase.service;
+package com.excilys.computerdatabase.service.impl;
 
 import java.sql.SQLException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import com.excilys.computerdatabase.dao.CompanyDAOImpl;
 import com.excilys.computerdatabase.dao.ConnectionFactory;
+import com.excilys.computerdatabase.dao.impl.CompanyDAOImpl;
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.CompanyWrapper;
+import com.excilys.computerdatabase.service.CompanyService;
 
-public enum CompanyServiceImpl implements CompanyService {
+@Service("companyService")
+public class CompanyServiceImpl implements CompanyService {
 
-	INSTANCE;
-	
 	private final static Logger logger = LoggerFactory.getLogger(CompanyDAOImpl.class);
+
+	@Autowired
+	private ConnectionFactory connectionFactory;
 	
+	@Autowired
 	private CompanyDAOImpl companyDAO;
-	{
-		companyDAO = CompanyDAOImpl.INSTANCE;
-	}
 	
 	@Override
 	public Company getCompany(int id)
@@ -37,7 +40,7 @@ public enum CompanyServiceImpl implements CompanyService {
 		}
 		finally
 		{
-			ConnectionFactory.INSTANCE.closeConnection();
+			connectionFactory.closeConnection();
 		}
 		
 		return c;
@@ -59,7 +62,7 @@ public enum CompanyServiceImpl implements CompanyService {
 		}
 		finally
 		{
-			ConnectionFactory.INSTANCE.closeConnection();
+			connectionFactory.closeConnection();
 		}
 		
 		return computerWrapper;

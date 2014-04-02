@@ -1,4 +1,4 @@
-package com.excilys.computerdatabase.dao;
+package com.excilys.computerdatabase.dao.impl;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,21 +10,29 @@ import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
+import com.excilys.computerdatabase.dao.ComputerDAO;
+import com.excilys.computerdatabase.dao.ComputerField;
+import com.excilys.computerdatabase.dao.ConnectionFactory;
+import com.excilys.computerdatabase.dao.QueryBuilder;
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.exception.SQLQueryFailException;
 
-public enum ComputerDAOImpl implements ComputerDAO {
-	
-	INSTANCE;
+@Repository
+public class ComputerDAOImpl implements ComputerDAO {
 	
 	private final Logger logger = LoggerFactory.getLogger(ComputerDAOImpl.class);
+	
+	@Autowired
+	private ConnectionFactory connectionFactory;
 	
 	public Computer getComputer(int id) throws SQLQueryFailException {
 		logger.debug("getComputer(" + id + ")");
 		
-		Connection connection = ConnectionFactory.INSTANCE.getConnection();
+		Connection connection = connectionFactory.getConnection();
 		
 		PreparedStatement getComputer = null;
 		ResultSet rs = null;
@@ -57,7 +65,7 @@ public enum ComputerDAOImpl implements ComputerDAO {
 		}			
 		finally
 		{
-			ConnectionFactory.INSTANCE.closeObject(rs, getComputer);
+			connectionFactory.closeObject(rs, getComputer);
 		}
 		
 		logger.debug("getComputer(" + id + ") successful");
@@ -66,7 +74,7 @@ public enum ComputerDAOImpl implements ComputerDAO {
 	
 	public List<Computer> getComputers(QueryBuilder qb) throws SQLQueryFailException {
 		logger.debug("getComputers(" + qb + ")");
-		Connection connection = ConnectionFactory.INSTANCE.getConnection();
+		Connection connection = connectionFactory.getConnection();
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT computer.id, computer.name, computer.introduced, computer.discontinued, company.id, company.name ");
@@ -116,7 +124,7 @@ public enum ComputerDAOImpl implements ComputerDAO {
 		}
 		finally
 		{
-			ConnectionFactory.INSTANCE.closeObject(rs, getComputers);
+			connectionFactory.closeObject(rs, getComputers);
 		}
 
 		logger.debug("getComputers() successful");
@@ -127,7 +135,7 @@ public enum ComputerDAOImpl implements ComputerDAO {
 		logger.debug("addComputer(" + c + ")");
 		
 		PreparedStatement insertComputer = null;
-		Connection connection = ConnectionFactory.INSTANCE.getConnection();
+		Connection connection = connectionFactory.getConnection();
 		int results = 0;
 		ResultSet rs = null;
 		try {
@@ -152,7 +160,7 @@ public enum ComputerDAOImpl implements ComputerDAO {
 		}
 		finally
 		{
-			ConnectionFactory.INSTANCE.closeObject(rs, insertComputer);
+			connectionFactory.closeObject(rs, insertComputer);
 		}
 
 		logger.debug("addComputer(" + c + ") successful");
@@ -161,7 +169,7 @@ public enum ComputerDAOImpl implements ComputerDAO {
 	
 	public int updateComputer(Computer c) throws SQLQueryFailException {
 		logger.debug("updateComputer(" + c + ")");
-		Connection connection = ConnectionFactory.INSTANCE.getConnection();
+		Connection connection = connectionFactory.getConnection();
 
 		PreparedStatement updateComputer = null;
 
@@ -194,7 +202,7 @@ public enum ComputerDAOImpl implements ComputerDAO {
 		}
 		finally
 		{
-			ConnectionFactory.INSTANCE.closeObject(null, updateComputer);
+			connectionFactory.closeObject(null, updateComputer);
 		}
 		
 		return results;
@@ -204,7 +212,7 @@ public enum ComputerDAOImpl implements ComputerDAO {
 	public boolean deleteComputer(int id) throws SQLQueryFailException {
 		logger.debug("deleteComputer(" + id + ")");
 		PreparedStatement deleteComputer = null;
-		Connection connection = ConnectionFactory.INSTANCE.getConnection();
+		Connection connection = connectionFactory.getConnection();
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("DELETE FROM computer ");
@@ -222,7 +230,7 @@ public enum ComputerDAOImpl implements ComputerDAO {
 		}
 		finally
 		{
-			ConnectionFactory.INSTANCE.closeObject(null, deleteComputer);
+			connectionFactory.closeObject(null, deleteComputer);
 		}
 		
 		logger.debug("deleteComputer(" + id + ") successful");
@@ -250,7 +258,7 @@ public enum ComputerDAOImpl implements ComputerDAO {
 		ResultSet rs = null;
 		int results = 0;
 		
-		Connection connection = ConnectionFactory.INSTANCE.getConnection();
+		Connection connection = connectionFactory.getConnection();
 		try {
 			getComputers = connection.prepareStatement(sb.toString());
 			String search = (qb.getSearch() == null)? "" : qb.getSearch();
@@ -265,7 +273,7 @@ public enum ComputerDAOImpl implements ComputerDAO {
 		}
 		finally
 		{
-			ConnectionFactory.INSTANCE.closeObject(rs, getComputers);
+			connectionFactory.closeObject(rs, getComputers);
 		}
 		
 		logger.debug("getTotalComputers() successful");
