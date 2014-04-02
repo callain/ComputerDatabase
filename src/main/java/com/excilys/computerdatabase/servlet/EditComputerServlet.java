@@ -17,8 +17,11 @@ import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.CompanyWrapper;
 import com.excilys.computerdatabase.domain.Computer;
+import com.excilys.computerdatabase.dto.ComputerDto;
+import com.excilys.computerdatabase.mapper.ComputerMapper;
 import com.excilys.computerdatabase.service.CompanyService;
 import com.excilys.computerdatabase.service.ComputerService;
+import com.excilys.computerdatabase.validator.ComputerValidator;
 
 public class EditComputerServlet extends HttpServlet {
 	final Logger logger = LoggerFactory.getLogger(EditComputerServlet.class);
@@ -72,47 +75,26 @@ public class EditComputerServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		logger.debug("EditComputerServlet.doPost()");
 		
-		String pComputerId = req.getParameter("computerId");
-		String pName = req.getParameter("name");
-		String pIntroduced = req.getParameter("introduced");
-		String pDiscontinued = req.getParameter("discontinued");
-		String pCompanyId = req.getParameter("company");
+		ComputerDto cDto = ComputerDto.builder()
+				.name(req.getParameter("name"))
+				.introduced(req.getParameter("introduced"))
+				.discontinued(req.getParameter("discontinued"))
+				.companyId(req.getParameter("company"))
+				.build();
 		
 		
 		// VALIDATION BACK
-		boolean validation = true;
-		if( pName == null || pName.length() < 2 ) {
-			req.setAttribute("name", true);
-			validation = false;
-		}
-
-		int companyId = 0;
-		try {
-			companyId = Integer.parseInt(pCompanyId);
-		}
-		catch(NumberFormatException e) {
-			req.setAttribute("companyId", true);
-			validation = false;
-		}
+		int validation = new ComputerValidator().validate(cDto);
 		
-		Timestamp introduced = (pIntroduced != null && !pIntroduced.equals(""))? Timestamp.valueOf(pIntroduced + " 00:00:00") : null;
-		Timestamp discontinued = (pDiscontinued != null && !pDiscontinued.equals(""))? Timestamp.valueOf(pDiscontinued + " 00:00:00") : null;
-
-		if( validation ) {
-			Computer c = new Computer();
-			
-			c.setId(Integer.parseInt(pComputerId));
-			c.setName(pName);
-			c.setIntroduced(introduced);
-			c.setDiscontinued(discontinued);
-			c.setCompany(companyService.getCompany(companyId));
-			
+		if( validation != 0 ) {
+			getServletContext().getRequestDispatcher("/WEB-INF/editComputer.jsp").forward(req, resp);
+		}
+		else {
+			Computer c = new ComputerMapper().fromDto(cDto);
+					
 			computerService.updateComputer(c);
 			req.setAttribute("computerEdited", true);
 			getServletContext().getRequestDispatcher("/computers").forward(req, resp);
-		}
-		else {
-			getServletContext().getRequestDispatcher("/WEB-INF/editComputer.jsp").forward(req, resp);
 		}
 	}
 }

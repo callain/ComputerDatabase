@@ -47,8 +47,6 @@ public class DashboardServlet extends HttpServlet {
 		// PARAMETERS
 		String page = req.getParameter("page");
 		String fieldSort = req.getParameter("field");
-		String orderBy = req.getParameter("orderBy");
-		String search = req.getParameter("search");
 
 		// PAGINATION
 		if( page == null || page.isEmpty() ) {
@@ -66,7 +64,7 @@ public class DashboardServlet extends HttpServlet {
 
 		// QUERY TO SEND
 		QueryBuilder qb = new QueryBuilder();
-		qb.setSearch(search);
+		qb.setSearch(req.getParameter("search"));
 		String field;
 		try {
 			if( fieldSort != null ) {
@@ -83,36 +81,29 @@ public class DashboardServlet extends HttpServlet {
 		qb.setField(field);
 		qb.setOffset((currentPage - 1) * RESULS_PER_PAGE);
 		qb.setNbRows(RESULS_PER_PAGE);
-		qb.setDirection("ASC".equals(orderBy));
+		qb.setDirection("ASC".equals(req.getParameter("orderBy")));
 
-		// CALL computerService if available
-		if (computerService != null) {
- 			ComputerWrapper computerWrapper;
-			List<Computer> computerList;
-			int nbComputers;
-			
-			computerWrapper = computerService.getComputers(qb);
-			nbComputers = computerService.getTotalComputers(qb);
-			computerList = computerWrapper.getComputers();
+		ComputerWrapper computerWrapper = computerService.getComputers(qb);
+		int nbComputers = computerService.getTotalComputers(qb);
+		List<Computer> computerList = computerWrapper.getComputers();
 
-			Map<ComputerField, String> computerFieldSort = new HashMap<>();
-			ComputerField[] computerField = ComputerField.values();
-			for(int i = 0 ; i < computerField.length ; i++ ) {
-				if( qb.getField().equals(computerField[i].getName()) ) {
-					if( qb.getDirection() ) computerFieldSort.put(computerField[i], "DESC");
-					else computerFieldSort.put(computerField[i], "ASC");
-				}
+		Map<ComputerField, String> computerFieldSort = new HashMap<>();
+		ComputerField[] computerField = ComputerField.values();
+		for(int i = 0 ; i < computerField.length ; i++ ) {
+			if( qb.getField().equals(computerField[i].getName()) ) {
+				if( qb.getDirection() ) computerFieldSort.put(computerField[i], "DESC");
 				else computerFieldSort.put(computerField[i], "ASC");
 			}
-			
-			req.setAttribute("search", search);
-			req.setAttribute("computerField", computerField);
-			req.setAttribute("computerFieldSort", computerFieldSort);
-			req.setAttribute("currentPage", currentPage);
-			req.setAttribute("nbPages", (int) Math.ceil((double) nbComputers / (double) RESULS_PER_PAGE));
-			req.setAttribute("nbComputers", nbComputers);
-			req.setAttribute("computers", computerList);
+			else computerFieldSort.put(computerField[i], "ASC");
 		}
+		
+		req.setAttribute("qb", qb);
+		req.setAttribute("computerField", computerField);
+		req.setAttribute("computerFieldSort", computerFieldSort);
+		req.setAttribute("currentPage", currentPage);
+		req.setAttribute("nbPages", (int) Math.ceil((double) nbComputers / (double) RESULS_PER_PAGE));
+		req.setAttribute("nbComputers", nbComputers);
+		req.setAttribute("computers", computerList);
 
 		getServletContext().getRequestDispatcher("/WEB-INF/dashboard.jsp").forward(req, resp);
 	}
