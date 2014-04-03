@@ -6,7 +6,7 @@
 <%@ attribute name="search" required="false"%>
 <%@ attribute name="page" required="false"%>
 <%@ attribute name="field" required="false"%>
-<%@ attribute name="orderBy" required="false"%>
+<%@ attribute name="isDesc" required="false"%>
 
 <c:set var="url" value="${href}?" />
 
@@ -22,8 +22,8 @@
 	<c:set var="url" value="${url}&field=${field}" />
 </c:if>
 
-<c:if test="${!empty orderBy}" >
-	<c:set var="url" value="${url}&orderBy=${orderBy}" />
+<c:if test="${!empty isDesc}" >
+	<c:set var="url" value="${url}&isDesc=${isDesc}" />
 </c:if>
 
 <a href="${url}" >${content}</a>

@@ -8,9 +8,9 @@ import org.springframework.stereotype.Service;
 import com.excilys.computerdatabase.dao.ConnectionFactory;
 import com.excilys.computerdatabase.dao.impl.CompanyDAOImpl;
 import com.excilys.computerdatabase.domain.Company;
-import com.excilys.computerdatabase.domain.CompanyWrapper;
 import com.excilys.computerdatabase.exception.SQLQueryFailException;
 import com.excilys.computerdatabase.service.CompanyService;
+import com.excilys.computerdatabase.wrapper.CompanyWrapper;
 
 @Service("companyService")
 public class CompanyServiceImpl implements CompanyService {

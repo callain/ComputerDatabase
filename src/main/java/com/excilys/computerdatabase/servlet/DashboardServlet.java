@@ -1,9 +1,6 @@
 package com.excilys.computerdatabase.servlet;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -15,11 +12,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
-import com.excilys.computerdatabase.dao.ComputerField;
 import com.excilys.computerdatabase.dao.QueryBuilder;
-import com.excilys.computerdatabase.domain.Computer;
-import com.excilys.computerdatabase.domain.ComputerWrapper;
 import com.excilys.computerdatabase.service.ComputerService;
+import com.excilys.computerdatabase.wrapper.ComputerWrapper;
 
 public class DashboardServlet extends HttpServlet {
 	
@@ -30,7 +25,7 @@ public class DashboardServlet extends HttpServlet {
 	private ComputerService computerService;
 	
 	// PAGE
-	private static final int RESULS_PER_PAGE = 12;
+	private static final int RESULTS_PER_PAGE = 12;
 	private int currentPage = 1;
 	
 	@Override
@@ -46,7 +41,6 @@ public class DashboardServlet extends HttpServlet {
 		
 		// PARAMETERS
 		String page = req.getParameter("page");
-		String fieldSort = req.getParameter("field");
 
 		// PAGINATION
 		if( page == null || page.isEmpty() ) {
@@ -62,48 +56,17 @@ public class DashboardServlet extends HttpServlet {
 			}
 		}
 
-		// QUERY TO SEND
 		QueryBuilder qb = new QueryBuilder();
 		qb.setSearch(req.getParameter("search"));
-		String field;
-		try {
-			if( fieldSort != null ) {
-				field = ComputerField.valueOf(fieldSort).getName();
-			}
-			else {
-				field = ComputerField.NAME.getName();
-			}
-		}
-		catch(IllegalArgumentException e) {
-			field = ComputerField.NAME.getName();
-		}
-		
-		qb.setField(field);
-		qb.setOffset((currentPage - 1) * RESULS_PER_PAGE);
-		qb.setNbRows(RESULS_PER_PAGE);
-		qb.setDirection("ASC".equals(req.getParameter("orderBy")));
+		qb.setField(req.getParameter("field"));
+		qb.setOffset((currentPage - 1) * RESULTS_PER_PAGE);
+		qb.setNbRows(RESULTS_PER_PAGE);
+		qb.setDirection(Boolean.parseBoolean(req.getParameter("isDesc")));
+		qb.setCurrentPage(currentPage);
 
 		ComputerWrapper computerWrapper = computerService.getComputers(qb);
-		int nbComputers = computerService.getTotalComputers(qb);
-		List<Computer> computerList = computerWrapper.getComputers();
 
-		Map<ComputerField, String> computerFieldSort = new HashMap<>();
-		ComputerField[] computerField = ComputerField.values();
-		for(int i = 0 ; i < computerField.length ; i++ ) {
-			if( qb.getField().equals(computerField[i].getName()) ) {
-				if( qb.getDirection() ) computerFieldSort.put(computerField[i], "DESC");
-				else computerFieldSort.put(computerField[i], "ASC");
-			}
-			else computerFieldSort.put(computerField[i], "ASC");
-		}
-		
-		req.setAttribute("qb", qb);
-		req.setAttribute("computerField", computerField);
-		req.setAttribute("computerFieldSort", computerFieldSort);
-		req.setAttribute("currentPage", currentPage);
-		req.setAttribute("nbPages", (int) Math.ceil((double) nbComputers / (double) RESULS_PER_PAGE));
-		req.setAttribute("nbComputers", nbComputers);
-		req.setAttribute("computers", computerList);
+		req.setAttribute("cw", computerWrapper);
 
 		getServletContext().getRequestDispatcher("/WEB-INF/dashboard.jsp").forward(req, resp);
 	}

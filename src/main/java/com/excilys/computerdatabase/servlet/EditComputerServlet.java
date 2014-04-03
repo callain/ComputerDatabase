@@ -1,7 +1,6 @@
 package com.excilys.computerdatabase.servlet;
 
 import java.io.IOException;
-import java.sql.Timestamp;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -15,13 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.excilys.computerdatabase.domain.Company;
-import com.excilys.computerdatabase.domain.CompanyWrapper;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.dto.ComputerDto;
 import com.excilys.computerdatabase.mapper.ComputerMapper;
 import com.excilys.computerdatabase.service.CompanyService;
 import com.excilys.computerdatabase.service.ComputerService;
 import com.excilys.computerdatabase.validator.ComputerValidator;
+import com.excilys.computerdatabase.wrapper.CompanyWrapper;
 
 public class EditComputerServlet extends HttpServlet {
 	final Logger logger = LoggerFactory.getLogger(EditComputerServlet.class);
@@ -33,6 +32,9 @@ public class EditComputerServlet extends HttpServlet {
 	
 	@Autowired
 	private CompanyService companyService;
+	
+	@Autowired
+	private ComputerMapper computerMapper;
 	
 	@Override
 	public void init() throws ServletException {
@@ -47,6 +49,7 @@ public class EditComputerServlet extends HttpServlet {
 		
 		String id = req.getParameter("id");
 		int computerId = 0;
+		
 		if( id != null ) {
 			try {
 				computerId = Integer.parseInt(id);
@@ -56,19 +59,21 @@ public class EditComputerServlet extends HttpServlet {
 				resp.sendRedirect("computers");
 			}
 		}
-		
-		if( computerService != null && computerId != 0) {
+
+		if( computerId > 0) {
 			Computer computer = computerService.getComputer(computerId);
-			req.setAttribute("computer", computer);
-		}
-		
-		if (companyService != null) {
+			ComputerDto cDto = computerMapper.toDto(computer);
+			req.setAttribute("computer", cDto);
 			CompanyWrapper companyWrapper = companyService.getCompanies();
 			List<Company> companyList = companyWrapper.getCompanies();
+			req.setAttribute("validation", "0000");
 			req.setAttribute("companies", companyList);
+			
+			getServletContext().getRequestDispatcher("/WEB-INF/editComputer.jsp").forward(req, resp);
 		}
-
-		getServletContext().getRequestDispatcher("/WEB-INF/editComputer.jsp").forward(req, resp);
+		else {
+			resp.sendRedirect("computers");
+		}
 	}
 
 	@Override
@@ -76,6 +81,7 @@ public class EditComputerServlet extends HttpServlet {
 		logger.debug("EditComputerServlet.doPost()");
 		
 		ComputerDto cDto = ComputerDto.builder()
+				.id(req.getParameter("id"))
 				.name(req.getParameter("name"))
 				.introduced(req.getParameter("introduced"))
 				.discontinued(req.getParameter("discontinued"))
@@ -84,13 +90,19 @@ public class EditComputerServlet extends HttpServlet {
 		
 		
 		// VALIDATION BACK
-		int validation = new ComputerValidator().validate(cDto);
-		
-		if( validation != 0 ) {
+		String validation = new ComputerValidator().validate(cDto);
+		System.out.println(validation);
+		if( !validation.equals("0000") ) {
+			CompanyWrapper companyWrapper = companyService.getCompanies();
+			List<Company> companyList = companyWrapper.getCompanies();
+			
+			req.setAttribute("validation", validation);
+			req.setAttribute("computer", cDto);
+			req.setAttribute("companies", companyList);
 			getServletContext().getRequestDispatcher("/WEB-INF/editComputer.jsp").forward(req, resp);
 		}
 		else {
-			Computer c = new ComputerMapper().fromDto(cDto);
+			Computer c = computerMapper.fromDto(cDto);
 					
 			computerService.updateComputer(c);
 			req.setAttribute("computerEdited", true);

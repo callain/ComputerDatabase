@@ -14,12 +14,15 @@ public class QueryBuilder {
 	
 	private boolean direction;
 	
+	private int currentPage;
+	
 	public QueryBuilder() {
 		offset = 0;
 		nbRows = 0;
 		search = "";
 		field = "";
 		direction = false;
+		currentPage = 1;
 	}
 
 	public int getOffset() {
@@ -60,6 +63,14 @@ public class QueryBuilder {
 
 	public void setDirection(boolean direction) {
 		this.direction = direction;
+	}
+	
+	public int getCurrentPage() {
+		return currentPage;
+	}
+
+	public void setCurrentPage(int currentPage) {
+		this.currentPage = currentPage;
 	}
 	
 	public String toString() {

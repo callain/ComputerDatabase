@@ -27,11 +27,11 @@
 	</c:if>
 	
 	<div class="container">
-		<h1 id="homeTitle">${nbComputers} computers found</h1>
+		<h1 id="homeTitle">${cw.results} computers found</h1>
 		<div>
 			<form action="computers" class="form-inline" method="GET">
 				<div style="width: 100%;">
-					<tags:boostrapPaginatorTag currentPage="${currentPage}" totalPages="${nbPages}" search="${qb.search}"/>
+					<tags:boostrapPaginatorTag currentPage="${cw.currentPage}" totalPages="${cw.pages}" search="${cw.search}"  field="${cw.field}" isDesc="${cv.isDesc}"/>
 					<input type="search" id="searchbox" class="form-control" name="search" value="" placeholder="Search name">
 					<button type="submit" id="searchsubmit" class="btn btn-primary">Filter by name</button>
 					<a class="btn btn-success" id="add" href="addComputer"  style="float: right;">Add Computer</a>
@@ -41,15 +41,15 @@
 		<table class="table table-striped table-hover">
 			<thead>
 				<tr>
-					<th><tags:link href="computers" content="Computer Name" page="${currentPage}" search="${qb.search}" field="${computerField[1]}" orderBy="${computerFieldSort.get(computerField[1])}" /></th>
-					<th><tags:link href="computers" content="Introduced Date" page="${currentPage}" search="${qb.search}" field="${computerField[2]}" orderBy="${computerFieldSort.get(computerField[2])}" /></th>
-					<th><tags:link href="computers" content="Discontinued Date" page="${currentPage}" search="${qb.search}" field="${computerField[3]}" orderBy="${computerFieldSort.get(computerField[3])}" /></th>
-					<th><tags:link href="computers" content="Company" page="${currentPage}" search="${qb.search}" field="${computerField[4]}" orderBy="${computerFieldSort.get(computerField[4])}" /></th>
+					<th><tags:link href="computers" content="Computer Name" page="${cw.currentPage}" search="${cw.search}" field="${cw.computerFields[1]}" isDesc="${cw.computerFields[1].name == cw.field.name? !cw.isDesc : cw.isDesc}" /></th>
+					<th><tags:link href="computers" content="Introduced Date" page="${cw.currentPage}" search="${cw.search}" field="${cw.computerFields[2]}" isDesc="${cw.computerFields[2].name == cw.field.name? !cw.isDesc : cw.isDesc}" /></th>
+					<th><tags:link href="computers" content="Discontinued Date" page="${cw.currentPage}" search="${cw.search}" field="${cw.computerFields[3]}" isDesc="${cw.computerFields[3].name == cw.field.name? !cw.isDesc : cw.isDesc}" /></th>
+					<th><tags:link href="computers" content="Company" page="${cw.currentPage}" search="${cw.search}" field="${cw.computerFields[4]}" isDesc="${cw.computerFields[4].name == cw.field.name? !cw.isDesc : cw.isDesc}" /></th>
 					<th></th>
 				</tr>
 			</thead>
 			<tbody>
-				<c:forEach var="computer" items="${computers}">
+				<c:forEach var="computer" items="${cw.computers}">
 					<tr>
 						<td><a href="editComputer?id=${computer.id}">${computer.name}</a></td>
 						<td><fmt:formatDate pattern="YYYY-MM-dd" value="${computer.introduced}" /></td>
@@ -60,7 +60,7 @@
 				</c:forEach>
 			</tbody>
 		</table>
-		<tags:boostrapPaginatorTag currentPage="${currentPage}" totalPages="${nbPages}" search="${qb.search}"/>
+		<tags:boostrapPaginatorTag currentPage="${cw.currentPage}" totalPages="${cw.pages}" search="${cw.search}" field="${cw.field}" isDesc="${cv.isDesc}"/>
 	</div>
 </section>
 

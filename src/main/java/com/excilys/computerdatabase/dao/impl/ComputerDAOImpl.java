@@ -82,12 +82,11 @@ public class ComputerDAOImpl implements ComputerDAO {
 		sb.append("LEFT JOIN company ON computer.company_id = company.id ");
 		sb.append("WHERE computer.name LIKE ? OR company.name LIKE ? ");
 		
-		String field = (qb.getField() == null)? ComputerField.NAME.getName() : qb.getField();
 		if( qb.getDirection() ) {
-			sb.append(String.format("ORDER BY %s DESC ", field));
+			sb.append(String.format("ORDER BY %s DESC ", qb.getField()));
 		}
 		else {
-			sb.append(String.format("ORDER BY %s ", field));
+			sb.append(String.format("ORDER BY %s ", qb.getField()));
 		}
 		
 		sb.append("LIMIT ?,?");

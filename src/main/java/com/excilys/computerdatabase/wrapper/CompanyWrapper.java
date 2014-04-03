@@ -1,7 +1,9 @@
-package com.excilys.computerdatabase.domain;
+package com.excilys.computerdatabase.wrapper;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.excilys.computerdatabase.domain.Company;
 
 public class CompanyWrapper {
 	private ArrayList<Company> companies;

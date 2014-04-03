@@ -5,14 +5,15 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.excilys.computerdatabase.dao.ComputerField;
 import com.excilys.computerdatabase.dao.ConnectionFactory;
 import com.excilys.computerdatabase.dao.QueryBuilder;
 import com.excilys.computerdatabase.dao.impl.ComputerDAOImpl;
 import com.excilys.computerdatabase.dao.impl.LogDAOImpl;
 import com.excilys.computerdatabase.domain.Computer;
-import com.excilys.computerdatabase.domain.ComputerWrapper;
 import com.excilys.computerdatabase.exception.SQLQueryFailException;
 import com.excilys.computerdatabase.service.ComputerService;
+import com.excilys.computerdatabase.wrapper.ComputerWrapper;
 
 @Service("computerService")
 public class ComputerServiceImpl implements ComputerService{
@@ -137,7 +138,31 @@ public class ComputerServiceImpl implements ComputerService{
 		ComputerWrapper computerWrapper = null; 
 		try
 		{
+			String field;
+			ComputerField cf;
+			try {
+				if( qb.getField() != null ) {
+					cf = ComputerField.valueOf(qb.getField());
+					field = cf.getName();
+				}
+				else {
+					cf = ComputerField.NAME;
+					field = cf.getName();
+				}
+			}
+			catch(IllegalArgumentException e) {
+				cf = ComputerField.NAME;
+				field = cf.getName();
+			}
+			
+			qb.setField(field);
 			computerWrapper = new ComputerWrapper(computerDAO.getComputers(qb));
+			int results = computerDAO.getTotalComputers(qb);
+			computerWrapper.setPages((int) Math.ceil((double) results / (double) qb.getNbRows()));
+			computerWrapper.setResults(results);
+			computerWrapper.setCurrentPage(qb.getCurrentPage());
+			computerWrapper.setField(cf);
+			computerWrapper.setDesc(qb.getDirection());
 		}
 		catch (SQLQueryFailException e)
 		{

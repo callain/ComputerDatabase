@@ -14,13 +14,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.support.SpringBeanAutowiringSupport;
 
 import com.excilys.computerdatabase.domain.Company;
-import com.excilys.computerdatabase.domain.CompanyWrapper;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.dto.ComputerDto;
 import com.excilys.computerdatabase.mapper.ComputerMapper;
 import com.excilys.computerdatabase.service.CompanyService;
 import com.excilys.computerdatabase.service.ComputerService;
 import com.excilys.computerdatabase.validator.ComputerValidator;
+import com.excilys.computerdatabase.wrapper.CompanyWrapper;
 
 public class AddComputerServlet extends HttpServlet {
 	private static final Logger logger = LoggerFactory.getLogger(AddComputerServlet.class);
@@ -31,6 +31,9 @@ public class AddComputerServlet extends HttpServlet {
 	
 	@Autowired
 	private CompanyService companyService;
+	
+	@Autowired
+	private ComputerMapper computerMapper;
 	
 	@Override
 	public void init() throws ServletException {
@@ -43,11 +46,10 @@ public class AddComputerServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		logger.debug("AddComputerServlet.doGet()");
 		
-		if (companyService != null) {
-			CompanyWrapper companyWrapper = companyService.getCompanies();
-			List<Company> companyList = companyWrapper.getCompanies();
-			req.setAttribute("companies", companyList);
-		}
+		CompanyWrapper companyWrapper = companyService.getCompanies();
+		List<Company> companyList = companyWrapper.getCompanies();
+		req.setAttribute("validation", "0000");
+		req.setAttribute("companies", companyList);
 
 		getServletContext().getRequestDispatcher("/WEB-INF/addComputer.jsp").forward(req, resp);
 	}
@@ -64,13 +66,18 @@ public class AddComputerServlet extends HttpServlet {
 		.build();
 		
 		// VALIDATION BACK
-		int validation = new ComputerValidator().validate(cDto);
+		String validation = new ComputerValidator().validate(cDto);
 		
-		if( validation != 0 ) {
+		if( !validation.equals("0000") ) {
+			CompanyWrapper companyWrapper = companyService.getCompanies();
+			List<Company> companyList = companyWrapper.getCompanies();
+			req.setAttribute("companies", companyList);
+			req.setAttribute("validation", validation);
+			req.setAttribute("computer", cDto);
 			getServletContext().getRequestDispatcher("/WEB-INF/addComputer.jsp").forward(req, resp);
 		}
 		else {
-			Computer c = new ComputerMapper().fromDto(cDto);
+			Computer c = computerMapper.fromDto(cDto);
 			
 			computerService.addComputer(c);
 			req.setAttribute("computerAdded", true);
