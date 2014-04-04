@@ -1,25 +1,25 @@
-package com.excilys.computerdatabase.servlet;
+package com.excilys.computerdatabase.controller;
 
-import java.io.IOException;
-
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.context.support.SpringBeanAutowiringSupport;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.excilys.computerdatabase.dao.QueryBuilder;
 import com.excilys.computerdatabase.service.ComputerService;
 import com.excilys.computerdatabase.wrapper.ComputerWrapper;
 
-public class DashboardServlet extends HttpServlet {
-	
-	private static final Logger logger = LoggerFactory.getLogger(DashboardServlet.class);
-	private static final long serialVersionUID = 1643759483804088905L;
+@Controller
+@RequestMapping("/computers")
+public class DashboardController
+{
+	private static final Logger logger = LoggerFactory.getLogger(DashboardController.class);
 	
 	@Autowired
 	private ComputerService computerService;
@@ -28,20 +28,14 @@ public class DashboardServlet extends HttpServlet {
 	private static final int RESULTS_PER_PAGE = 12;
 	private int currentPage = 1;
 	
-	@Override
-	public void init() throws ServletException {
-		super.init();
-		logger.debug("DashboardServlet.init()");
-		SpringBeanAutowiringSupport.processInjectionBasedOnCurrentContext(this);
-	}
-	
-	@Override
-	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+	@RequestMapping(method = RequestMethod.GET)
+	public String doGet 
+	(		@RequestParam(value = "page", required = false) String page, @RequestParam(value = "search", required = false) String search,
+			@RequestParam(value = "field", required = false) String field, @RequestParam(value = "isDesc", required = false) String isDesc,
+			HttpServletRequest req, HttpServletResponse resp )
+	{
 		logger.debug("DashboardServlet.doGet()");
 		
-		// PARAMETERS
-		String page = req.getParameter("page");
-
 		// PAGINATION
 		if( page == null || page.isEmpty() ) {
 			currentPage = 1;
@@ -57,23 +51,23 @@ public class DashboardServlet extends HttpServlet {
 		}
 
 		QueryBuilder qb = new QueryBuilder();
-		qb.setSearch(req.getParameter("search"));
-		qb.setField(req.getParameter("field"));
+		qb.setSearch(search);
+		qb.setField(field);
 		qb.setOffset((currentPage - 1) * RESULTS_PER_PAGE);
 		qb.setNbRows(RESULTS_PER_PAGE);
-		qb.setDirection(Boolean.parseBoolean(req.getParameter("isDesc")));
+		qb.setDirection(Boolean.parseBoolean(isDesc));
 		qb.setCurrentPage(currentPage);
 
 		ComputerWrapper computerWrapper = computerService.getComputers(qb);
-
 		req.setAttribute("cw", computerWrapper);
 
-		getServletContext().getRequestDispatcher("/WEB-INF/dashboard.jsp").forward(req, resp);
+		return "dashboard";
 	}
-
-	@Override
-	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		this.doGet(req, resp);
+	
+	@RequestMapping(method = RequestMethod.POST)
+	public String doPost(HttpServletRequest req, HttpServletResponse resp)
+	{
 		logger.debug("DashboardServlet.doPost()");
+		return this.doGet(null, null, null, null, req, resp);
 	}
 }

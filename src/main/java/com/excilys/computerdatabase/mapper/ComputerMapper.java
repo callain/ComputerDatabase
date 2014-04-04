@@ -12,29 +12,49 @@ import com.excilys.computerdatabase.dto.ComputerDto;
 import com.excilys.computerdatabase.service.CompanyService;
 
 @Component
-public class ComputerMapper {
-	
+public class ComputerMapper
+{
 	@Autowired
 	private CompanyService companyService;
 	
-	public Computer fromDto(ComputerDto cDto) {
+	public Computer fromDto(ComputerDto cDto)
+	{
 		Computer c = new Computer();
 		if( cDto.getId() != null && !cDto.getId().isEmpty() ) c.setId(Integer.parseInt(cDto.getId()));
 		c.setName(cDto.getName());
-		c.setCompany(companyService.getCompany(Integer.parseInt(cDto.getCompanyId())));
-		c.setIntroduced(Timestamp.valueOf(cDto.getIntroduced() + " 00:00:00"));
-		c.setDiscontinued(Timestamp.valueOf(cDto.getDiscontinued() + " 00:00:00"));
+		if( cDto.getCompanyId() != null && !cDto.getCompanyId().isEmpty() && !cDto.getCompanyId().equals("0") )
+			c.setCompany(companyService.getCompany(Integer.parseInt(cDto.getCompanyId())));
+		else c.setCompany(null);
+		try
+		{
+			Timestamp introduced = Timestamp.valueOf(cDto.getIntroduced() + " 00:00:00");
+			c.setIntroduced(introduced);
+		}
+		catch(IllegalArgumentException e)
+		{
+			c.setIntroduced(null);
+		}
+		try
+		{
+			Timestamp discontinued = Timestamp.valueOf(cDto.getDiscontinued() + " 00:00:00");
+			c.setDiscontinued(discontinued);
+		}
+		catch(IllegalArgumentException e)
+		{
+			c.setDiscontinued(null);
+		}
 		
 		return c;
 	}
 	
-	public ComputerDto toDto(Computer c) {
+	public ComputerDto toDto(Computer c)
+	{
 		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
 		return ComputerDto.builder()
 		.id(c.getId() + "")
 		.name(c.getName())
-		.introduced(formatter.format(new Date(c.getIntroduced().getTime())))
-		.discontinued(formatter.format(new Date(c.getDiscontinued().getTime())))
+		.introduced((c.getIntroduced() != null)?formatter.format(new Date(c.getIntroduced().getTime())):null)
+		.discontinued((c.getDiscontinued() != null)?formatter.format(new Date(c.getDiscontinued().getTime())):null)
 		.companyId(c.getCompany().getId() + "")
 		.build();
 	}
