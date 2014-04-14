@@ -11,7 +11,7 @@ $(document).ready(function()
 		{
 			return false;
 		}
-	}, "Please enter a valid date in the format yyyy-mm-dd.");
+	}, $('#dateError').val());
 	
 	$('#computer-form').validate(
 	{

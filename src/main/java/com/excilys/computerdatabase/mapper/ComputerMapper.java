@@ -1,10 +1,13 @@
 package com.excilys.computerdatabase.mapper;
 
-import java.sql.Timestamp;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Locale;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Component;
 
 import com.excilys.computerdatabase.domain.Computer;
@@ -17,18 +20,31 @@ public class ComputerMapper
 	@Autowired
 	private CompanyService companyService;
 	
+	@Autowired
+    private MessageSource messageSource;
+	
 	public Computer fromDto(ComputerDto cDto)
 	{
 		Computer c = new Computer();
-		if( cDto.getId() != null && !cDto.getId().isEmpty() ) c.setId(Integer.parseInt(cDto.getId()));
+		if( cDto.getId() != null && !cDto.getId().isEmpty() )
+		{
+			c.setId(Integer.parseInt(cDto.getId()));
+		}
+		
 		c.setName(cDto.getName());
+		
 		if( cDto.getCompanyId() != null && !cDto.getCompanyId().isEmpty() && !cDto.getCompanyId().equals("0") )
+		{
 			c.setCompany(companyService.getCompany(Integer.parseInt(cDto.getCompanyId())));
-		else c.setCompany(null);
+		}
+		else
+		{
+			c.setCompany(null);
+		}
+		
 		try
 		{
-			Timestamp introduced = Timestamp.valueOf(cDto.getIntroduced() + " 00:00:00");
-			c.setIntroduced(introduced);
+			c.setIntroduced(new DateTime(cDto.getIntroduced()));
 		}
 		catch(IllegalArgumentException e)
 		{
@@ -36,8 +52,7 @@ public class ComputerMapper
 		}
 		try
 		{
-			Timestamp discontinued = Timestamp.valueOf(cDto.getDiscontinued() + " 00:00:00");
-			c.setDiscontinued(discontinued);
+			c.setDiscontinued(new DateTime(cDto.getDiscontinued()));
 		}
 		catch(IllegalArgumentException e)
 		{
@@ -49,12 +64,15 @@ public class ComputerMapper
 	
 	public ComputerDto toDto(Computer c)
 	{
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+		Locale locale = LocaleContextHolder.getLocale();
+		String pattern = messageSource.getMessage("date.pattern.joda", null, locale);
+		DateTimeFormatter dtf = DateTimeFormat.forPattern(pattern);
+
 		return ComputerDto.builder()
 		.id(c.getId() + "")
 		.name(c.getName())
-		.introduced((c.getIntroduced() != null)?formatter.format(new Date(c.getIntroduced().getTime())):null)
-		.discontinued((c.getDiscontinued() != null)?formatter.format(new Date(c.getDiscontinued().getTime())):null)
+		.introduced((c.getIntroduced() != null)?dtf.print(c.getIntroduced()):null)
+		.discontinued((c.getDiscontinued() != null)?dtf.print(c.getDiscontinued()):null)
 		.companyId(c.getCompany().getId() + "")
 		.build();
 	}

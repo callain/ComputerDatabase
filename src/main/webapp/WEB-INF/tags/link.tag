@@ -2,7 +2,6 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
 <%@ attribute name="href" required="true"%>
-<%@ attribute name="content" required="true"%>
 <%@ attribute name="search" required="false"%>
 <%@ attribute name="page" required="false"%>
 <%@ attribute name="field" required="false"%>
@@ -26,4 +25,4 @@
 	<c:set var="url" value="${url}&isDesc=${isDesc}" />
 </c:if>
 
-<a href="${url}" >${content}</a>
+<a href="${url}" ><jsp:doBody /></a>

@@ -1,12 +1,12 @@
 package com.excilys.computerdatabase.domain;
 
-import java.sql.Timestamp;
+import org.joda.time.DateTime;
 
 public class Computer implements Comparable<Computer>{
 	private int id;
 	private String name;
-	private Timestamp introduced;
-	private Timestamp discontinued;
+	private DateTime introduced;
+	private DateTime discontinued;
 	private Company company;
 
 	public int getId() {
@@ -17,11 +17,11 @@ public class Computer implements Comparable<Computer>{
 		return name;
 	}
 
-	public Timestamp getIntroduced() {
+	public DateTime getIntroduced() {
 		return introduced;
 	}
 
-	public Timestamp getDiscontinued() {
+	public DateTime getDiscontinued() {
 		return discontinued;
 	}
 
@@ -33,11 +33,11 @@ public class Computer implements Comparable<Computer>{
 		this.name = name;
 	}
 
-	public void setIntroduced(Timestamp introduced) {
+	public void setIntroduced(DateTime introduced) {
 		this.introduced = introduced;
 	}
 
-	public void setDiscontinued(Timestamp discontinued) {
+	public void setDiscontinued(DateTime discontinued) {
 		this.discontinued = discontinued;
 	}
 

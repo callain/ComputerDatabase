@@ -63,7 +63,8 @@ public class AddComputerController
 		
 		String validation = "";
 		
-		if( result.hasErrors() ) {
+		if( result.hasErrors() )
+		{
 			CompanyWrapper companyWrapper = companyService.getCompanies();
 			List<Company> companyList = companyWrapper.getCompanies();
 			
@@ -84,7 +85,8 @@ public class AddComputerController
 			req.setAttribute("computer", cDto);
 			return "addComputer";
 		}
-		else {
+		else
+		{
 			Computer c = computerMapper.fromDto(cDto);
 			computerService.addComputer(c);
 			req.setAttribute("computerAdded", true);

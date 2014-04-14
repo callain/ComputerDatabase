@@ -13,24 +13,24 @@
 <ul class="pagination">
 
 	<!-- FIRST PAGE -->
-	<li <c:if test="${currentPage == 1}">class="disabled"</c:if>><tags:link href="computers" page="1" search="${search}" content="&laquo;" field="${field}" isDesc="${isDesc}"/></li>
+	<li <c:if test="${currentPage == 1}">class="disabled"</c:if>><tags:link href="computers" page="1" search="${search}" field="${field}" isDesc="${isDesc}">&laquo;</tags:link></li>
 
 	<!-- PREVIOUS PAGE -->
 	<c:choose>
 		<c:when test="${currentPage == 1}" >
-			<li class="disabled"><tags:link href="#" content="&lt;" search="${search}" field="${field}" isDesc="${isDesc}"/></li>
+			<li class="disabled"><tags:link href="#" search="${search}" field="${field}" isDesc="${isDesc}">&lt;</tags:link></li>
 		</c:when>
 		<c:otherwise>
-			<li><tags:link href="computers" content="&lt;" page="${currentPage - 1}" search="${search}" field="${field}" isDesc="${isDesc}"/></li>
+			<li><tags:link href="computers" page="${currentPage - 1}" search="${search}" field="${field}" isDesc="${isDesc}">&lt;</tags:link></li>
 		</c:otherwise>		
 	</c:choose>
 
 	<!-- CURRENT PAGE - 2 -->
 	<c:if test="${currentPage - 2 >= 1 }">
-		<li><tags:link href="computers" page="${currentPage - 2}" search="${search}" content="${currentPage - 2}" field="${field}" isDesc="${isDesc}"/></li>
+		<li><tags:link href="computers" page="${currentPage - 2}" search="${search}" field="${field}" isDesc="${isDesc}">${currentPage - 2}</tags:link></li>
 	</c:if>
 	<c:if test="${currentPage - 1 >= 1 }">
-		<li><tags:link href="computers" page="${currentPage - 1}" search="${search}" content="${currentPage - 1}" field="${field}" isDesc="${isDesc}"/></li>
+		<li><tags:link href="computers" page="${currentPage - 1}" search="${search}" field="${field}" isDesc="${isDesc}">${currentPage - 1}</tags:link></li>
 	</c:if>
 	
 	<!-- CURRENT PAGE -->
@@ -38,24 +38,24 @@
 
 	<!-- CURRENT PAGE + 2 -->
 	<c:if test="${currentPage + 1 <= totalPages }">
-		<li><tags:link href="computers" page="${currentPage + 1}" search="${search}" content="${currentPage + 1}" field="${field}" isDesc="${isDesc}"/></li>
+		<li><tags:link href="computers" page="${currentPage + 1}" search="${search}" field="${field}" isDesc="${isDesc}">${currentPage + 1}</tags:link></li>
 	</c:if>
 	<c:if test="${currentPage + 2 <= totalPages }">
-		<li><tags:link href="computers" page="${currentPage + 2}" search="${search}" content="${currentPage + 2}" field="${field}" isDesc="${isDesc}"/></li>
+		<li><tags:link href="computers" page="${currentPage + 2}" search="${search}" field="${field}" isDesc="${isDesc}">${currentPage + 2}</tags:link></li>
 	</c:if>
 
 	<!-- NEXT PAGE -->
 	<c:choose>
 		<c:when test="${currentPage == totalPages}" >
-			<li class="disabled"><tags:link href="#" content="&gt;" search="${search}" field="${field}" isDesc="${isDesc}"/></li>
+			<li class="disabled"><tags:link href="#" search="${search}" field="${field}" isDesc="${isDesc}">&gt;</tags:link></li>
 		</c:when>
 		<c:otherwise>
-			<li><tags:link href="computers" content="&gt;" page="${currentPage + 1}" search="${search}" field="${field}" isDesc="${isDesc}"/></li>
+			<li><tags:link href="computers" page="${currentPage + 1}" search="${search}" field="${field}" isDesc="${isDesc}">&gt;</tags:link></li>
 		</c:otherwise>		
 	</c:choose>
 
 	<!-- LAST PAGE -->
-	<li <c:if test="${currentPage == totalPages}">class="disabled"</c:if>><tags:link href="computers" page="${totalPages}" search="${search}" content="&raquo;" field="${field}" isDesc="${isDesc}"/></li>
+	<li <c:if test="${currentPage == totalPages}">class="disabled"</c:if>><tags:link href="computers" page="${totalPages}" search="${search}" field="${field}" isDesc="${isDesc}">&raquo;</tags:link></li>
 
 	<!-- END LIST -->
 </ul>

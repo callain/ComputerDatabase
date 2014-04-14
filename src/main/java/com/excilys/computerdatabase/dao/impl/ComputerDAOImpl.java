@@ -4,10 +4,12 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,8 +56,8 @@ public class ComputerDAOImpl implements ComputerDAO {
 			p = new Computer();
 			p.setId(rs.getInt("id"));
 			p.setName(rs.getString("name"));
-			p.setIntroduced(rs.getTimestamp("introduced"));
-			p.setDiscontinued(rs.getTimestamp("discontinued"));
+			p.setIntroduced(new DateTime(rs.getTimestamp("introduced")));
+			p.setDiscontinued(new DateTime(rs.getTimestamp("discontinued")));
 			Company company = new Company();
 			company.setId(rs.getInt(5));
 			company.setName(rs.getString(6));
@@ -110,8 +112,8 @@ public class ComputerDAOImpl implements ComputerDAO {
 				Computer p = new Computer();
 				p.setId(rs.getInt(1));
 				p.setName(rs.getString(2));
-				p.setIntroduced(rs.getTimestamp(3));
-				p.setDiscontinued(rs.getTimestamp(4));
+				p.setIntroduced(new DateTime(rs.getTimestamp(3)));
+				p.setDiscontinued(new DateTime(rs.getTimestamp(4)));
 				Company company = new Company();
 				company.setId(rs.getInt(5));
 				company.setName(rs.getString(6));
@@ -140,8 +142,8 @@ public class ComputerDAOImpl implements ComputerDAO {
 		try {
 			insertComputer = connection.prepareStatement("INSERT INTO computer values(null,?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS);
 			insertComputer.setString(1, c.getName());
-			insertComputer.setTimestamp(2, c.getIntroduced());
-			insertComputer.setTimestamp(3, c.getDiscontinued());
+			insertComputer.setTimestamp(2, new Timestamp(c.getIntroduced().getMillis()));
+			insertComputer.setTimestamp(3, new Timestamp(c.getDiscontinued().getMillis()));
 			
 			if( c.getCompany() == null ) {
 				insertComputer.setNull(4, Types.NULL);
@@ -181,8 +183,8 @@ public class ComputerDAOImpl implements ComputerDAO {
 		try {
 			updateComputer = connection.prepareStatement(sb.toString());
 			updateComputer.setString(1, c.getName());
-			updateComputer.setTimestamp(2, c.getIntroduced());
-			updateComputer.setTimestamp(3, c.getDiscontinued());
+			updateComputer.setTimestamp(2, new Timestamp(c.getIntroduced().getMillis()));
+			updateComputer.setTimestamp(3, new Timestamp(c.getDiscontinued().getMillis()));
 			
 			if( c.getCompany() != null ) {
 				updateComputer.setInt(4, c.getCompany().getId());
