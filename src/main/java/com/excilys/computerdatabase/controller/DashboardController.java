@@ -29,10 +29,9 @@ public class DashboardController
 	private int currentPage = 1;
 	
 	@RequestMapping(method = RequestMethod.GET)
-	public String doGet 
-	(		@RequestParam(value = "page", required = false) String page, @RequestParam(value = "search", required = false) String search,
-			@RequestParam(value = "field", required = false) String field, @RequestParam(value = "isDesc", required = false) String isDesc,
-			HttpServletRequest req, HttpServletResponse resp )
+	public String doGet (	@RequestParam(value = "page", required = false) String page, @RequestParam(value = "search", required = false) String search,
+							@RequestParam(value = "field", required = false) String field, @RequestParam(value = "isDesc", required = false) String isDesc,
+							HttpServletRequest req, HttpServletResponse resp )
 	{
 		logger.debug("DashboardServlet.doGet()");
 		

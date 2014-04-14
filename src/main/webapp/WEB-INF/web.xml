@@ -5,6 +5,10 @@
 	id="WebApp_ID" version="3.0">
 	<display-name>Computer Database</display-name>
 
+	<listener>
+    	<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
+
 	<servlet>
 		<servlet-name>dispatcher</servlet-name>
 		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
