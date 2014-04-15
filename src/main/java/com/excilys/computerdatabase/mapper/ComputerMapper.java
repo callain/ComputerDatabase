@@ -6,8 +6,8 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.stereotype.Component;
 
 import com.excilys.computerdatabase.domain.Computer;
@@ -21,7 +21,7 @@ public class ComputerMapper
 	private CompanyService companyService;
 	
 	@Autowired
-    private MessageSource messageSource;
+    private ReloadableResourceBundleMessageSource messageSource;
 	
 	public Computer fromDto(ComputerDto cDto)
 	{
@@ -42,22 +42,22 @@ public class ComputerMapper
 			c.setCompany(null);
 		}
 		
-		try
+		Locale locale = LocaleContextHolder.getLocale();
+		String pattern = messageSource.getMessage("date.pattern.joda", null, locale);
+		DateTimeFormatter dtf = DateTimeFormat.forPattern(pattern);
+		if( !cDto.getIntroduced().isEmpty())
 		{
-			c.setIntroduced(new DateTime(cDto.getIntroduced()));
+			DateTime dt = dtf.parseDateTime(cDto.getIntroduced());
+			c.setIntroduced(dt);
 		}
-		catch(IllegalArgumentException e)
+		else c.setIntroduced(null);
+		
+		if( !cDto.getDiscontinued().isEmpty() )
 		{
-			c.setIntroduced(null);
+			DateTime dt = dtf.parseDateTime(cDto.getDiscontinued());
+			c.setDiscontinued(dt);
 		}
-		try
-		{
-			c.setDiscontinued(new DateTime(cDto.getDiscontinued()));
-		}
-		catch(IllegalArgumentException e)
-		{
-			c.setDiscontinued(null);
-		}
+		else c.setDiscontinued(null);
 		
 		return c;
 	}

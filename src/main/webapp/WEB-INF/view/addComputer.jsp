@@ -4,17 +4,25 @@
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
+<input type="hidden" id="datePattern" value="<spring:message code="date.pattern.js" />" />
+<input type="hidden" id="dateError" value="<spring:message code="date.error" />" />
+<input type="hidden" id="lang" value="<spring:message code="lang" />" />
 <script>
 	$(function() {
+		$.datepicker.setDefaults($.datepicker.regional[$('#lang').val()]);
 		$(".datepicker").datepicker({
-			dateFormat : "<spring:message code="date.pattern.js" />"
+			dateFormat : $('#datePattern').val(),
+			minDate : new Date('1970/1/1'),
+			maxDate : new Date('2038/12/31'),
+			changeMonth: true,
+			changeYear: true
 		});
 	});
 </script>
 
 <section id="main">
 	<div class="container">
-		<h1>Add Computer</h1>
+		<h1><spring:message code="add.computer" /></h1>
 		<form:form action="addComputer" method="POST" id="computer-form" class="form-horizontal" commandName="computer">
 			<tags:formdiv test="${validation.charAt(0) == '0'.charAt(0)}">
 				<label for="name" class="col-sm-3 control-label"><spring:message code="computer.name" /></label>

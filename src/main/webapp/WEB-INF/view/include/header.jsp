@@ -16,6 +16,7 @@
 
 	<script type="text/javascript" src="resources/js/jquery-ui-1.10.4.custom.min.js"></script>
 	<link href="resources/css/jquery-ui-1.10.4.custom.min.css" rel="stylesheet" media="screen">
+	<script src="resources/js/jquery.ui.datepicker-fr.js"></script>
 	
 	<!-- Bootstrap -->
 	<link href="resources/css/bootstrap.min.css" rel="stylesheet" media="screen">

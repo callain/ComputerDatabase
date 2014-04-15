@@ -56,8 +56,10 @@ public class ComputerDAOImpl implements ComputerDAO {
 			p = new Computer();
 			p.setId(rs.getInt("id"));
 			p.setName(rs.getString("name"));
-			p.setIntroduced(new DateTime(rs.getTimestamp("introduced")));
-			p.setDiscontinued(new DateTime(rs.getTimestamp("discontinued")));
+			if( rs.getTimestamp(3) != null ) p.setIntroduced(new DateTime(rs.getTimestamp("introduced")));
+			else p.setIntroduced(null);
+			if( rs.getTimestamp(4) != null ) p.setDiscontinued(new DateTime(rs.getTimestamp("discontinued")));
+			else p.setDiscontinued(null);
 			Company company = new Company();
 			company.setId(rs.getInt(5));
 			company.setName(rs.getString(6));
@@ -112,8 +114,10 @@ public class ComputerDAOImpl implements ComputerDAO {
 				Computer p = new Computer();
 				p.setId(rs.getInt(1));
 				p.setName(rs.getString(2));
-				p.setIntroduced(new DateTime(rs.getTimestamp(3)));
-				p.setDiscontinued(new DateTime(rs.getTimestamp(4)));
+				if( rs.getTimestamp(3) != null ) p.setIntroduced(new DateTime(rs.getTimestamp(3)));
+				else p.setIntroduced(null);
+				if( rs.getTimestamp(4) != null ) p.setDiscontinued(new DateTime(rs.getTimestamp(4)));
+				else p.setDiscontinued(null);
 				Company company = new Company();
 				company.setId(rs.getInt(5));
 				company.setName(rs.getString(6));
@@ -142,15 +146,15 @@ public class ComputerDAOImpl implements ComputerDAO {
 		try {
 			insertComputer = connection.prepareStatement("INSERT INTO computer values(null,?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS);
 			insertComputer.setString(1, c.getName());
-			insertComputer.setTimestamp(2, new Timestamp(c.getIntroduced().getMillis()));
-			insertComputer.setTimestamp(3, new Timestamp(c.getDiscontinued().getMillis()));
 			
-			if( c.getCompany() == null ) {
-				insertComputer.setNull(4, Types.NULL);
-			}
-			else {
-				insertComputer.setInt(4, c.getCompany().getId());
-			}
+			if( c.getIntroduced() != null ) insertComputer.setTimestamp(2, new Timestamp(c.getIntroduced().getMillis()));
+			else insertComputer.setNull(2, Types.NULL);
+			
+			if( c.getDiscontinued() != null ) insertComputer.setTimestamp(3, new Timestamp(c.getDiscontinued().getMillis()));
+			else insertComputer.setNull(3, Types.NULL);
+			
+			if( c.getCompany() == null ) insertComputer.setNull(4, Types.NULL);
+			else insertComputer.setInt(4, c.getCompany().getId());
 			
 			insertComputer.execute();
 			rs = insertComputer.getGeneratedKeys();
@@ -180,25 +184,28 @@ public class ComputerDAOImpl implements ComputerDAO {
 		
 		int results = 0;
 
-		try {
+		try
+		{
 			updateComputer = connection.prepareStatement(sb.toString());
 			updateComputer.setString(1, c.getName());
-			updateComputer.setTimestamp(2, new Timestamp(c.getIntroduced().getMillis()));
-			updateComputer.setTimestamp(3, new Timestamp(c.getDiscontinued().getMillis()));
 			
-			if( c.getCompany() != null ) {
-				updateComputer.setInt(4, c.getCompany().getId());
-			}
-			else {
-				updateComputer.setNull(4, Types.NULL);
-			}
+			if( c.getIntroduced() != null ) updateComputer.setTimestamp(2, new Timestamp(c.getIntroduced().getMillis()));
+			else updateComputer.setNull(2, Types.NULL);
+			
+			if( c.getDiscontinued() != null ) updateComputer.setTimestamp(3, new Timestamp(c.getDiscontinued().getMillis()));
+			else updateComputer.setNull(3, Types.NULL);
+			
+			if( c.getCompany() != null ) updateComputer.setInt(4, c.getCompany().getId());
+			else updateComputer.setNull(4, Types.NULL);
 			
 			updateComputer.setInt(5, c.getId());
 			results = updateComputer.executeUpdate();
 			updateComputer.close();
 			
 			logger.debug("updateComputer(" + c + ") successful");	
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			throw new SQLQueryFailException(e);
 		}
 		finally

@@ -2,9 +2,10 @@ $(document).ready(function()
 {
 	$.validator.addMethod("dateControl",function(value, element)
 	{
+		if( value.length == 0 ) return true;
 		try
 		{
-			$.datepicker.parseDate("yy-mm-dd", value);
+			$.datepicker.parseDate($('#datePattern').val(), value);
 			return true;
 		}
 		catch(e)

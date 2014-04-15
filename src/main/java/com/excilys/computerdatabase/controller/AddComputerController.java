@@ -42,7 +42,7 @@ public class AddComputerController
 	private ComputerMapper computerMapper;
 
 	@RequestMapping(method = RequestMethod.GET)
-	public String doGet(Model model) 
+	public String doGet(Model model)
 	{
 		logger.debug("AddComputerServlet.doGet()");
 		
