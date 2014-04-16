@@ -41,7 +41,7 @@
 					<form:errors path="introduced" class="has-error" />
 				</div>
 				<div class="col-xs-3">
-					<span class="help-block"><spring:message code="date.pattern.joda"/></span>
+					<span class="help-block"><spring:message code="date.pattern"/></span>
 				</div>
 			</tags:formdiv>
 
@@ -53,7 +53,7 @@
 					<form:errors path="discontinued" class="has-error" />
 				</div>
 				<div class="col-xs-3">
-					<span class="help-block"><spring:message code="date.pattern.joda"/></span>
+					<span class="help-block"><spring:message code="date.pattern"/></span>
 				</div>
 			</tags:formdiv>
 			

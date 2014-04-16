@@ -5,13 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import javax.sql.DataSource;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.jolbox.bonecp.BoneCPDataSource;
@@ -19,21 +15,23 @@ import com.jolbox.bonecp.BoneCPDataSource;
 @Component
 public class ConnectionFactory {
 
-	private BoneCPDataSource boneCP  = new BoneCPDataSource();
 	final Logger logger = LoggerFactory.getLogger(ConnectionFactory.class);
+
+	@Autowired
+	private BoneCPDataSource boneCP;
 	
-	{
-		Context ctx;
-		DataSource ds;
-		try {
-			ctx = new InitialContext();
-			ds = (DataSource) ctx.lookup("java:/comp/env/jdbc/computer");
-			boneCP.setDatasourceBean(ds);
-			logger.debug("Loading datasource successful");
-		} catch (NamingException e) {
-			logger.debug("Loading datasource failed with: " + e.getMessage());
-		}
-	}
+//	{
+//		Context ctx;
+//		DataSource ds;
+//		try {
+//			ctx = new InitialContext();
+//			ds = (DataSource) ctx.lookup("java:/comp/env/jdbc/computer");
+//			boneCP.setDatasourceBean(ds);
+//			logger.debug("Loading datasource successful");
+//		} catch (NamingException e) {
+//			logger.debug("Loading datasource failed with: " + e.getMessage());
+//		}
+//	}
 	
 	private final ThreadLocal<Connection> connection = new ThreadLocal<Connection>()
 	{

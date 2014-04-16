@@ -48,7 +48,7 @@ $(function() {
 					<span class="glyphicon form-control-feedback"></span>
 				</div>
 				<div class="col-xs-3">
-					<span class="help-block"><spring:message code="date.pattern.joda" /></span>
+					<span class="help-block"><spring:message code="date.pattern" /></span>
 				</div>
 			</tags:formdiv>
 
@@ -59,7 +59,7 @@ $(function() {
 					<span class="glyphicon form-control-feedback"></span>
 				</div>
 				<div class="col-xs-3">
-					<span class="help-block"><spring:message code="date.pattern.joda" /></span>
+					<span class="help-block"><spring:message code="date.pattern" /></span>
 				</div>
 			</tags:formdiv>
 

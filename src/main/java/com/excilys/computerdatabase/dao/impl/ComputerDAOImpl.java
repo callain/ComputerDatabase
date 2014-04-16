@@ -13,6 +13,7 @@ import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.datasource.DataSourceUtils;
 import org.springframework.stereotype.Repository;
 
 import com.excilys.computerdatabase.dao.ComputerDAO;
@@ -22,19 +23,25 @@ import com.excilys.computerdatabase.dao.QueryBuilder;
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.exception.SQLQueryFailException;
+import com.jolbox.bonecp.BoneCPDataSource;
 
 @Repository
-public class ComputerDAOImpl implements ComputerDAO {
-	
+public class ComputerDAOImpl implements ComputerDAO
+{
 	private final Logger logger = LoggerFactory.getLogger(ComputerDAOImpl.class);
 	
 	@Autowired
 	private ConnectionFactory connectionFactory;
 	
-	public Computer getComputer(int id) throws SQLQueryFailException {
+	@Autowired
+	private BoneCPDataSource boneCP;
+	
+	@Override
+	public Computer getComputer(int id) throws SQLQueryFailException
+	{
 		logger.debug("getComputer(" + id + ")");
 		
-		Connection connection = connectionFactory.getConnection();
+		Connection connection = DataSourceUtils.getConnection(boneCP);
 		
 		PreparedStatement getComputer = null;
 		ResultSet rs = null;
@@ -76,9 +83,12 @@ public class ComputerDAOImpl implements ComputerDAO {
 		return p;
 	}
 	
-	public List<Computer> getComputers(QueryBuilder qb) throws SQLQueryFailException {
+	@Override
+	public List<Computer> getComputers(QueryBuilder qb) throws SQLQueryFailException
+	{
 		logger.debug("getComputers(" + qb + ")");
-		Connection connection = connectionFactory.getConnection();
+		
+		Connection connection = DataSourceUtils.getConnection(boneCP);
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT computer.id, computer.name, computer.introduced, computer.discontinued, company.id, company.name ");
@@ -86,12 +96,8 @@ public class ComputerDAOImpl implements ComputerDAO {
 		sb.append("LEFT JOIN company ON computer.company_id = company.id ");
 		sb.append("WHERE computer.name LIKE ? OR company.name LIKE ? ");
 		
-		if( qb.getDirection() ) {
-			sb.append(String.format("ORDER BY %s DESC ", qb.getField()));
-		}
-		else {
-			sb.append(String.format("ORDER BY %s ", qb.getField()));
-		}
+		if( qb.getDirection() ) sb.append(String.format("ORDER BY %s DESC ", qb.getField()));
+		else sb.append(String.format("ORDER BY %s ", qb.getField()));
 		
 		sb.append("LIMIT ?,?");
 		
@@ -99,7 +105,8 @@ public class ComputerDAOImpl implements ComputerDAO {
 		ResultSet rs = null;
 		ArrayList<Computer> computerList = new ArrayList<Computer>();
 		
-		try {
+		try
+		{
 			getComputers = connection.prepareStatement(sb.toString());
 			String search = (qb.getSearch() == null)? "" : qb.getSearch();
 			getComputers.setString(1, "%" + search + "%");
@@ -110,7 +117,8 @@ public class ComputerDAOImpl implements ComputerDAO {
 			
 			rs = getComputers.executeQuery();
 			
-			while (rs.next()) {
+			while (rs.next())
+			{
 				Computer p = new Computer();
 				p.setId(rs.getInt(1));
 				p.setName(rs.getString(2));
@@ -124,7 +132,9 @@ public class ComputerDAOImpl implements ComputerDAO {
 				p.setCompany(company);
 				computerList.add(p);
 			}
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			throw new SQLQueryFailException(e);
 		}
 		finally
@@ -136,14 +146,18 @@ public class ComputerDAOImpl implements ComputerDAO {
 		return computerList;
 	}
 
-	public int addComputer(Computer c) throws SQLQueryFailException {
+	@Override
+	public int addComputer(Computer c) throws SQLQueryFailException
+	{
 		logger.debug("addComputer(" + c + ")");
 		
+		Connection connection = DataSourceUtils.getConnection(boneCP);		
+		
 		PreparedStatement insertComputer = null;
-		Connection connection = connectionFactory.getConnection();
 		int results = 0;
 		ResultSet rs = null;
-		try {
+		try
+		{
 			insertComputer = connection.prepareStatement("INSERT INTO computer values(null,?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS);
 			insertComputer.setString(1, c.getName());
 			
@@ -160,7 +174,9 @@ public class ComputerDAOImpl implements ComputerDAO {
 			rs = insertComputer.getGeneratedKeys();
 			rs.next();
 			results = rs.getInt(1);
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			throw new SQLQueryFailException(e);
 		}
 		finally
@@ -172,10 +188,13 @@ public class ComputerDAOImpl implements ComputerDAO {
 		return results;
 	}
 	
-	public int updateComputer(Computer c) throws SQLQueryFailException {
+	@Override
+	public int updateComputer(Computer c) throws SQLQueryFailException
+	{
 		logger.debug("updateComputer(" + c + ")");
-		Connection connection = connectionFactory.getConnection();
 
+		Connection connection = DataSourceUtils.getConnection(boneCP);
+		
 		PreparedStatement updateComputer = null;
 
 		StringBuilder sb = new StringBuilder();
@@ -216,24 +235,29 @@ public class ComputerDAOImpl implements ComputerDAO {
 		return results;
 	}
 	
-
-	public boolean deleteComputer(int id) throws SQLQueryFailException {
+	@Override
+	public boolean deleteComputer(int id) throws SQLQueryFailException
+	{
 		logger.debug("deleteComputer(" + id + ")");
+
+		Connection connection = DataSourceUtils.getConnection(boneCP);
+
 		PreparedStatement deleteComputer = null;
-		Connection connection = connectionFactory.getConnection();
-		
 		StringBuilder sb = new StringBuilder();
 		sb.append("DELETE FROM computer ");
 		sb.append("WHERE id = ?");
 		
 		boolean returnz = false;
-		try {
+		try
+		{
 			deleteComputer = connection.prepareStatement(sb.toString());
 			deleteComputer.setInt(1, id);
 			returnz = deleteComputer.execute();
 			
 			deleteComputer.close();
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			throw new SQLQueryFailException(e);
 		}
 		finally
@@ -245,7 +269,9 @@ public class ComputerDAOImpl implements ComputerDAO {
 		return returnz;
 	}
 
-	public int getTotalComputers(QueryBuilder qb) throws SQLQueryFailException {
+	@Override
+	public int getTotalComputers(QueryBuilder qb) throws SQLQueryFailException
+	{
 		logger.debug("getTotalComputers(" + qb + ")");
 		
 		StringBuilder sb = new StringBuilder();
@@ -255,10 +281,12 @@ public class ComputerDAOImpl implements ComputerDAO {
 		sb.append("WHERE computer.name LIKE ? OR company.name LIKE ? ");
 		
 		String field = (qb.getField() == null)? ComputerField.NAME.getName() : qb.getField();
-		if( qb.getDirection() ) {
+		if( qb.getDirection() )
+		{
 			sb.append(String.format("ORDER BY %s DESC ", field));
 		}
-		else {
+		else
+		{
 			sb.append(String.format("ORDER BY %s ", field));
 		}
 
@@ -266,8 +294,9 @@ public class ComputerDAOImpl implements ComputerDAO {
 		ResultSet rs = null;
 		int results = 0;
 		
-		Connection connection = connectionFactory.getConnection();
-		try {
+		Connection connection = DataSourceUtils.getConnection(boneCP);
+		try
+		{
 			getComputers = connection.prepareStatement(sb.toString());
 			String search = (qb.getSearch() == null)? "" : qb.getSearch();
 			getComputers.setString(1, "%" + search + "%");
@@ -276,7 +305,9 @@ public class ComputerDAOImpl implements ComputerDAO {
 			rs = getComputers.executeQuery();
 			rs.next();
 			results =  rs.getInt(1);
-		} catch (SQLException e) {
+		}
+		catch (SQLException e)
+		{
 			throw new SQLQueryFailException(e);
 		}
 		finally

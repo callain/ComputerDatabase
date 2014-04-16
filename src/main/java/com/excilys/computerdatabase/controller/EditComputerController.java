@@ -86,7 +86,8 @@ public class EditComputerController
 		
 		String validation = "";
 		
-		if( result.hasErrors() ) {
+		if( result.hasErrors() )
+		{
 			CompanyWrapper companyWrapper = companyService.getCompanies();
 			List<Company> companyList = companyWrapper.getCompanies();
 			
@@ -107,7 +108,8 @@ public class EditComputerController
 			req.setAttribute("companies", companyList);
 			return "editComputer";
 		}
-		else {
+		else
+		{
 			Computer c = computerMapper.fromDto(cDto);
 					
 			computerService.updateComputer(c);

@@ -4,11 +4,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import com.excilys.computerdatabase.dao.ConnectionFactory;
 import com.excilys.computerdatabase.dao.impl.CompanyDAOImpl;
 import com.excilys.computerdatabase.domain.Company;
-import com.excilys.computerdatabase.exception.SQLQueryFailException;
 import com.excilys.computerdatabase.service.CompanyService;
 import com.excilys.computerdatabase.wrapper.CompanyWrapper;
 
@@ -18,51 +17,26 @@ public class CompanyServiceImpl implements CompanyService {
 	private final static Logger logger = LoggerFactory.getLogger(CompanyDAOImpl.class);
 
 	@Autowired
-	private ConnectionFactory connectionFactory;
-	
-	@Autowired
 	private CompanyDAOImpl companyDAO;
 	
 	@Override
+	@Transactional(readOnly = true)
 	public Company getCompany(int id)
 	{
 		logger.debug("getCompany(" + id + ")");
 		Company c = null;
-		try
-		{
-			c = companyDAO.getCompany(id);
-		}
-		catch (SQLQueryFailException e)
-		{
-			logger.error("getCompany(" + id + ") failed with: " + e.getMessage());
-			throw e;
-		}
-		finally
-		{
-			connectionFactory.closeConnection();
-		}
+		c = companyDAO.getCompany(id);
 		
 		return c;
 	}
 	
 	@Override
+	@Transactional(readOnly = true)
 	public CompanyWrapper getCompanies()
 	{
 		logger.debug("getCompanies()");
 		CompanyWrapper computerWrapper = null;
-		try
-		{
-			computerWrapper = new CompanyWrapper(companyDAO.getCompanies());
-		}
-		catch(SQLQueryFailException e)
-		{
-			logger.error("getCompanies() failed with: " + e.getMessage() );
-			throw e;
-		}
-		finally
-		{
-			connectionFactory.closeConnection();
-		}
+		computerWrapper = new CompanyWrapper(companyDAO.getCompanies());
 		
 		return computerWrapper;
 	}

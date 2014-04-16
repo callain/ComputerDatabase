@@ -54,6 +54,19 @@
 			<artifactId>spring-webmvc</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
+
+		<!--  ASPECT J -->
+		<dependency>
+			<groupId>aspectj</groupId>
+			<artifactId>aspectjweaver</artifactId>
+			<version>1.5.4</version>
+			<scope>runtime</scope>
+		</dependency>
 
 		<!-- HIBERNATE VALIDATOR -->
 		<dependency>
@@ -74,7 +87,7 @@
 			<version>1.1.1</version>
 			<scope>runtime</scope>
 		</dependency>
-		
+
 	</dependencies>
 	<build>
 		<finalName>ComputerDatabase</finalName>

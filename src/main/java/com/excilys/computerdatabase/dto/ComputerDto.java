@@ -6,17 +6,17 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 import com.excilys.computerdatabase.annotation.Date;
 
-public class ComputerDto {
+public class ComputerDto
+{
 	private String id;
 	
-	@NotEmpty(message = "{NotEmpty.computerDto.name}") @Size(min = 2, max = 255, message = "{Size.computerDto.name}")
+	@NotEmpty(message = "{NotEmpty.computerDto.name}")
+	@Size(min = 2, max = 255, message = "{Size.computerDto.name}")
 	private String name;
 	
-//	@Pattern(regexp = "((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])", message = "{date.error}" )
 	@Date
 	private String introduced;
 	
-//	@Pattern(regexp = "((19|20)\\d\\d)-(0?[1-9]|1[012])-(0?[1-9]|[12][0-9]|3[01])", message = "{date.error}" )
 	@Date
 	private String discontinued;
 	
