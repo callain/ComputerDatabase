@@ -32,5 +32,8 @@
 		<error-code>404</error-code>
 		<location>/WEB-INF/view/error/404.jsp</location>
 	</error-page>
-
+	<error-page>
+		<exception-type>com.excilys.computerdatabase.exception.SQLQueryFailException</exception-type>
+		<location>/WEB-INF/view/error/queryfail.jsp</location>
+	</error-page>
 </web-app>
