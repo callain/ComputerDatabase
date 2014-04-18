@@ -1,94 +1,129 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.excilys.computerdatabase</groupId>
 	<artifactId>ComputerDatabase</artifactId>
-	<packaging>war</packaging>
-	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<version>2.2.0-RELEASE</version>
 	<name>ComputerDatabase Maven Webapp</name>
-	<url>http://maven.apache.org</url>
 
 	<properties>
 		<spring.version>4.0.3.RELEASE</spring.version>
+		<bonecp.version>0.8.0.RELEASE</bonecp.version>
+		<jstl.version>1.2</jstl.version>
+		<logback.version>1.1.1</logback.version>
+		<aspectj.version>1.5.4</aspectj.version>
+		<hibernate.validator.version>5.1.0.Final</hibernate.validator.version>
+		<joda.time.version>2.3</joda.time.version>
+		<joda.time.tags.version>1.1.1</joda.time.tags.version>
+		<core.version>1.0</core.version>
 	</properties>
 
 	<dependencies>
-		<!-- UNIT TEST -->
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>3.8.1</version>
-			<scope>test</scope>
-		</dependency>
-
-		<!-- BONECP -->
-		<dependency>
-			<groupId>com.jolbox</groupId>
-			<artifactId>bonecp</artifactId>
-			<version>0.8.0.RELEASE</version>
-		</dependency>
-
-		<!-- JSTL -->
-		<dependency>
-			<groupId>jstl</groupId>
-			<artifactId>jstl</artifactId>
-			<version>1.2</version>
-			<scope>runtime</scope>
-		</dependency>
-
 		<!-- LOG -->
 		<dependency>
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
-			<version>1.1.1</version>
+			<version>${logback.version}</version>
 		</dependency>
-
-		<!-- SPRING -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-web</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-webmvc</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-jdbc</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-
-		<!--  ASPECT J -->
-		<dependency>
-			<groupId>aspectj</groupId>
-			<artifactId>aspectjweaver</artifactId>
-			<version>1.5.4</version>
-			<scope>runtime</scope>
-		</dependency>
-
-		<!-- HIBERNATE VALIDATOR -->
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-validator</artifactId>
-			<version>5.1.0.Final</version>
-		</dependency>
-
-		<!-- JODA TIME -->
-		<dependency>
-			<groupId>joda-time</groupId>
-			<artifactId>joda-time</artifactId>
-			<version>2.3</version>
-		</dependency>
-		<dependency>
-			<groupId>joda-time</groupId>
-			<artifactId>joda-time-jsptags</artifactId>
-			<version>1.1.1</version>
-			<scope>runtime</scope>
-		</dependency>
-
 	</dependencies>
+	
+	<dependencyManagement>
+		<dependencies>
+			<!-- BONECP -->
+			<dependency>
+				<groupId>com.jolbox</groupId>
+				<artifactId>bonecp</artifactId>
+				<version>${bonecp.version}</version>
+			</dependency>
+
+			<!-- JSTL -->
+			<dependency>
+				<groupId>jstl</groupId>
+				<artifactId>jstl</artifactId>
+				<version>${jstl.version}</version>
+			</dependency>
+
+			<!-- SPRING -->
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-web</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-webmvc</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-jdbc</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
+
+			<!-- ASPECT J -->
+			<dependency>
+				<groupId>aspectj</groupId>
+				<artifactId>aspectjweaver</artifactId>
+				<version>${aspectj.version}</version>
+			</dependency>
+
+			<!-- HIBERNATE VALIDATOR -->
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-validator</artifactId>
+				<version>${hibernate.validator.version}</version>
+			</dependency>
+
+			<!-- JODA TIME -->
+			<dependency>
+				<groupId>joda-time</groupId>
+				<artifactId>joda-time</artifactId>
+				<version>${joda.time.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>joda-time</groupId>
+				<artifactId>joda-time-jsptags</artifactId>
+				<version>${joda.time.tags.version}</version>
+			</dependency>
+
+			<!-- CORE -->
+			<dependency>
+				<groupId>com.excilys.computerdatabase</groupId>
+				<artifactId>core</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- SERVICE -->
+			<dependency>
+				<groupId>com.excilys.computerdatabase</groupId>
+				<artifactId>service</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- PERSISTENCE -->
+			<dependency>
+				<groupId>com.excilys.computerdatabase</groupId>
+				<artifactId>persistence</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- BINDING -->
+			<dependency>
+				<groupId>com.excilys.computerdatabase</groupId>
+				<artifactId>binding</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+
+			<!-- WEBAPP -->
+			<dependency>
+				<groupId>com.excilys.computerdatabase</groupId>
+				<artifactId>webapp</artifactId>
+				<version>${project.version}</version>
+			</dependency>
+		</dependencies>
+	</dependencyManagement>
 	<build>
 		<finalName>ComputerDatabase</finalName>
 		<plugins>
@@ -103,4 +138,11 @@
 			</plugin>
 		</plugins>
 	</build>
+	<modules>
+		<module>persistence</module>
+		<module>webapp</module>
+		<module>service</module>
+		<module>core</module>
+		<module>binding</module>
+	</modules>
 </project>
