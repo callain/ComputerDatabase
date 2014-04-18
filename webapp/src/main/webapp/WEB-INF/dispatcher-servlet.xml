@@ -26,10 +26,6 @@
 		</property>
 	</bean>
 	
-	<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
-		<property name="validationMessageSource" ref="messageSource" />	
-	</bean>
-	
 	<!-- Internalization and localization support -->
 	<bean id="localeResolver" class="org.springframework.web.servlet.i18n.SessionLocaleResolver">
 		<property name="defaultLocale" value="en_US" />

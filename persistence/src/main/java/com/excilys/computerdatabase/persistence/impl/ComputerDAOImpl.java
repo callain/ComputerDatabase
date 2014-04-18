@@ -2,27 +2,30 @@ package com.excilys.computerdatabase.persistence.impl;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.sql.Timestamp;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.datasource.DataSourceUtils;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
-import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.exception.SQLQueryFailException;
 import com.excilys.computerdatabase.persistence.ComputerDAO;
 import com.excilys.computerdatabase.persistence.ComputerField;
 import com.excilys.computerdatabase.persistence.ConnectionFactory;
 import com.excilys.computerdatabase.persistence.QueryBuilder;
+import com.excilys.computerdatabase.rowmapper.ComputerRowMapper;
 import com.jolbox.bonecp.BoneCPDataSource;
 
 @Repository
@@ -40,55 +43,35 @@ public class ComputerDAOImpl implements ComputerDAO
 	public Computer getComputer(int id) throws SQLQueryFailException
 	{
 		logger.debug("getComputer(" + id + ")");
+		JdbcTemplate jdbc = new JdbcTemplate(boneCP);
 		
-		Connection connection = DataSourceUtils.getConnection(boneCP);
-		
-		PreparedStatement getComputer = null;
-		ResultSet rs = null;
-		Computer p = null;
-
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT computer.id, computer.name, computer.introduced, computer.discontinued, company.id, company.name ");
 		sb.append("FROM computer ");
 		sb.append("LEFT JOIN company ON computer.company_id = company.id ");
 		sb.append("WHERE computer.id = ? ");
 
-		try {
-			getComputer = connection.prepareStatement(sb.toString());
-			getComputer.setInt(1, id);
-			
-			rs = getComputer.executeQuery();
-			rs.next();
-			
-			p = new Computer();
-			p.setId(rs.getInt("id"));
-			p.setName(rs.getString("name"));
-			if( rs.getTimestamp(3) != null ) p.setIntroduced(new DateTime(rs.getTimestamp("introduced")));
-			else p.setIntroduced(null);
-			if( rs.getTimestamp(4) != null ) p.setDiscontinued(new DateTime(rs.getTimestamp("discontinued")));
-			else p.setDiscontinued(null);
-			Company company = new Company();
-			company.setId(rs.getInt(5));
-			company.setName(rs.getString(6));
-			p.setCompany(company);
-		} catch (SQLException e) {
+		List<Computer> computerList;
+		try
+		{
+			computerList = jdbc.query(sb.toString(), new Object[] { id }, new ComputerRowMapper() );
+		}
+		catch (DataAccessException e)
+		{
 			throw new SQLQueryFailException(e);
 		}			
-		finally
-		{
-			connectionFactory.closeObject(rs, getComputer);
-		}
 		
 		logger.debug("getComputer(" + id + ") successful");
-		return p;
+
+		if( !computerList.isEmpty() ) return computerList.get(0);
+		else return null;
 	}
 	
 	@Override
 	public List<Computer> getComputers(QueryBuilder qb) throws SQLQueryFailException
 	{
 		logger.debug("getComputers(" + qb + ")");
-		
-		Connection connection = DataSourceUtils.getConnection(boneCP);
+		JdbcTemplate jdbc = new JdbcTemplate(boneCP);
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT computer.id, computer.name, computer.introduced, computer.discontinued, company.id, company.name ");
@@ -101,45 +84,18 @@ public class ComputerDAOImpl implements ComputerDAO
 		
 		sb.append("LIMIT ?,?");
 		
-		PreparedStatement getComputers = null;
-		ResultSet rs = null;
-		ArrayList<Computer> computerList = new ArrayList<Computer>();
+		List<Computer> computerList = new ArrayList<Computer>();
 		
 		try
 		{
-			getComputers = connection.prepareStatement(sb.toString());
 			String search = (qb.getSearch() == null)? "" : qb.getSearch();
-			getComputers.setString(1, "%" + search + "%");
-			getComputers.setString(2, "%" + search + "%");
 			
-			getComputers.setInt(3, qb.getOffset());
-			getComputers.setInt(4, qb.getNbRows());
-			
-			rs = getComputers.executeQuery();
-			
-			while (rs.next())
-			{
-				Computer p = new Computer();
-				p.setId(rs.getInt(1));
-				p.setName(rs.getString(2));
-				if( rs.getTimestamp(3) != null ) p.setIntroduced(new DateTime(rs.getTimestamp(3)));
-				else p.setIntroduced(null);
-				if( rs.getTimestamp(4) != null ) p.setDiscontinued(new DateTime(rs.getTimestamp(4)));
-				else p.setDiscontinued(null);
-				Company company = new Company();
-				company.setId(rs.getInt(5));
-				company.setName(rs.getString(6));
-				p.setCompany(company);
-				computerList.add(p);
-			}
+			Object[] parameters = new Object[] { "%" + search + "%", "%" + search + "%", qb.getOffset(), qb.getNbRows() };
+			computerList = jdbc.query(sb.toString(), parameters, new ComputerRowMapper() );
 		}
-		catch (SQLException e)
+		catch (DataAccessException e)
 		{
 			throw new SQLQueryFailException(e);
-		}
-		finally
-		{
-			connectionFactory.closeObject(rs, getComputers);
 		}
 
 		logger.debug("getComputers() successful");
@@ -147,45 +103,35 @@ public class ComputerDAOImpl implements ComputerDAO
 	}
 
 	@Override
-	public int addComputer(Computer c) throws SQLQueryFailException
+	public int addComputer(final Computer c) throws SQLQueryFailException
 	{
 		logger.debug("addComputer(" + c + ")");
 		
-		Connection connection = DataSourceUtils.getConnection(boneCP);		
-		
-		PreparedStatement insertComputer = null;
-		int results = 0;
-		ResultSet rs = null;
-		try
+		JdbcTemplate jdbc = new JdbcTemplate(boneCP);		
+		KeyHolder keyHolder = new GeneratedKeyHolder();
+		jdbc.update(new PreparedStatementCreator()
 		{
-			insertComputer = connection.prepareStatement("INSERT INTO computer values(null,?,?,?,?)", PreparedStatement.RETURN_GENERATED_KEYS);
-			insertComputer.setString(1, c.getName());
-			
-			if( c.getIntroduced() != null ) insertComputer.setTimestamp(2, new Timestamp(c.getIntroduced().getMillis()));
-			else insertComputer.setNull(2, Types.NULL);
-			
-			if( c.getDiscontinued() != null ) insertComputer.setTimestamp(3, new Timestamp(c.getDiscontinued().getMillis()));
-			else insertComputer.setNull(3, Types.NULL);
-			
-			if( c.getCompany() == null ) insertComputer.setNull(4, Types.NULL);
-			else insertComputer.setInt(4, c.getCompany().getId());
-			
-			insertComputer.execute();
-			rs = insertComputer.getGeneratedKeys();
-			rs.next();
-			results = rs.getInt(1);
-		}
-		catch (SQLException e)
-		{
-			throw new SQLQueryFailException(e);
-		}
-		finally
-		{
-			connectionFactory.closeObject(rs, insertComputer);
-		}
+			@Override
+			public PreparedStatement createPreparedStatement(Connection connection) throws SQLException
+			{
+				PreparedStatement ps = connection.prepareStatement("INSERT INTO computer values(null,?,?,?,?)", Statement.RETURN_GENERATED_KEYS);
+				ps.setString(1, c.getName());
+				
+				if( c.getIntroduced() != null ) ps.setTimestamp(2,new Timestamp(c.getIntroduced().getMillis()));
+				else ps.setNull(2, Types.NULL);
+				
+				if( c.getDiscontinued() != null ) ps.setTimestamp(3, new Timestamp(c.getDiscontinued().getMillis()));
+				else ps.setNull(3, Types.NULL);
+				
+				if( c.getCompany() != null ) ps.setInt(4, c.getCompany().getId());
+				else ps.setNull(4, Types.NULL);
+
+	            return ps;
+			}
+		}, keyHolder);
 
 		logger.debug("addComputer(" + c + ") successful");
-		return results;
+		return keyHolder.getKey().intValue();
 	}
 	
 	@Override
@@ -193,45 +139,32 @@ public class ComputerDAOImpl implements ComputerDAO
 	{
 		logger.debug("updateComputer(" + c + ")");
 
-		Connection connection = DataSourceUtils.getConnection(boneCP);
+		JdbcTemplate jdbc = new JdbcTemplate(boneCP);
 		
-		PreparedStatement updateComputer = null;
-
 		StringBuilder sb = new StringBuilder();
 		sb.append("UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? ");
 		sb.append("WHERE id = ? ");
 		
 		int results = 0;
 
-		try
-		{
-			updateComputer = connection.prepareStatement(sb.toString());
-			updateComputer.setString(1, c.getName());
-			
-			if( c.getIntroduced() != null ) updateComputer.setTimestamp(2, new Timestamp(c.getIntroduced().getMillis()));
-			else updateComputer.setNull(2, Types.NULL);
-			
-			if( c.getDiscontinued() != null ) updateComputer.setTimestamp(3, new Timestamp(c.getDiscontinued().getMillis()));
-			else updateComputer.setNull(3, Types.NULL);
-			
-			if( c.getCompany() != null ) updateComputer.setInt(4, c.getCompany().getId());
-			else updateComputer.setNull(4, Types.NULL);
-			
-			updateComputer.setInt(5, c.getId());
-			results = updateComputer.executeUpdate();
-			updateComputer.close();
-			
-			logger.debug("updateComputer(" + c + ") successful");	
-		}
-		catch (SQLException e)
-		{
-			throw new SQLQueryFailException(e);
-		}
-		finally
-		{
-			connectionFactory.closeObject(null, updateComputer);
-		}
+		Object[] parameters = new Object[5];
+		jdbc.update(sb.toString(), parameters);
+		parameters[0] = c.getName();
 		
+		if( c.getIntroduced() != null ) parameters[1] = new Timestamp(c.getIntroduced().getMillis());
+		else parameters[1] =  Types.NULL;
+		
+		if( c.getDiscontinued() != null ) parameters[2] = new Timestamp(c.getDiscontinued().getMillis());
+		else parameters[2] = Types.NULL;
+		
+		if( c.getCompany() != null ) parameters[3] = c.getCompany().getId();
+		else parameters[3] = Types.NULL;
+		
+		parameters[4] = c.getId();
+		
+		jdbc.update(sb.toString(), parameters);
+		
+		logger.debug("updateComputer(" + c + ") successful");	
 		return results;
 	}
 	
@@ -239,40 +172,23 @@ public class ComputerDAOImpl implements ComputerDAO
 	public boolean deleteComputer(int id) throws SQLQueryFailException
 	{
 		logger.debug("deleteComputer(" + id + ")");
+		JdbcTemplate jdbc = new JdbcTemplate(boneCP);
 
-		Connection connection = DataSourceUtils.getConnection(boneCP);
-
-		PreparedStatement deleteComputer = null;
 		StringBuilder sb = new StringBuilder();
 		sb.append("DELETE FROM computer ");
 		sb.append("WHERE id = ?");
-		
-		boolean returnz = false;
-		try
-		{
-			deleteComputer = connection.prepareStatement(sb.toString());
-			deleteComputer.setInt(1, id);
-			returnz = deleteComputer.execute();
-			
-			deleteComputer.close();
-		}
-		catch (SQLException e)
-		{
-			throw new SQLQueryFailException(e);
-		}
-		finally
-		{
-			connectionFactory.closeObject(null, deleteComputer);
-		}
+
+		int rowsAffected = jdbc.update(sb.toString(), new Object[] { id });
 		
 		logger.debug("deleteComputer(" + id + ") successful");
-		return returnz;
+		return rowsAffected >= 1;
 	}
 
 	@Override
 	public int getTotalComputers(QueryBuilder qb) throws SQLQueryFailException
 	{
 		logger.debug("getTotalComputers(" + qb + ")");
+		JdbcTemplate jdbc = new JdbcTemplate(boneCP);
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT count(computer.id) ");
@@ -290,30 +206,10 @@ public class ComputerDAOImpl implements ComputerDAO
 			sb.append(String.format("ORDER BY %s ", field));
 		}
 
-		PreparedStatement getComputers = null;
-		ResultSet rs = null;
-		int results = 0;
+		String search = (qb.getSearch() == null)? "" : qb.getSearch();
+		Object[] parameters = new Object[] { "%" + search + "%", "%" + search + "%"};
+		Integer results = jdbc.queryForObject(sb.toString(), parameters, Integer.class);
 		
-		Connection connection = DataSourceUtils.getConnection(boneCP);
-		try
-		{
-			getComputers = connection.prepareStatement(sb.toString());
-			String search = (qb.getSearch() == null)? "" : qb.getSearch();
-			getComputers.setString(1, "%" + search + "%");
-			getComputers.setString(2, "%" + search + "%");
-			
-			rs = getComputers.executeQuery();
-			rs.next();
-			results =  rs.getInt(1);
-		}
-		catch (SQLException e)
-		{
-			throw new SQLQueryFailException(e);
-		}
-		finally
-		{
-			connectionFactory.closeObject(rs, getComputers);
-		}
 		
 		logger.debug("getTotalComputers() successful");
 		return results;

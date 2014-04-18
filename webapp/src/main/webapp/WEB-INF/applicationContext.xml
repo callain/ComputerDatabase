@@ -7,12 +7,18 @@
 	http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
 	http://www.springframework.org/schema/context 
 	http://www.springframework.org/schema/context/spring-context-4.0.xsd">
-	
-    <import resource="classpath:service-context.xml"/>
-    <import resource="classpath:binding-context.xml"/>
-    
-    <bean id="messageSource" class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
-    	<property name="basename" value="classpath:messages" />
-    	<property name="defaultEncoding" value="UTF-8"/>
+
+	<import resource="classpath:service-context.xml" />
+	<import resource="classpath:binding-context.xml" />
+
+	<bean id="messageSource"
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basename" value="classpath:messages" />
+		<property name="defaultEncoding" value="UTF-8" />
+	</bean>
+
+	<bean id="validator"
+		class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
+		<property name="validationMessageSource" ref="messageSource" />
 	</bean>
 </beans>

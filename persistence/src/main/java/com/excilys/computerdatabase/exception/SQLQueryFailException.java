@@ -1,11 +1,10 @@
 package com.excilys.computerdatabase.exception;
 
-import java.sql.SQLException;
 
 public class SQLQueryFailException extends RuntimeException {
 
 	private String message;
-	public SQLQueryFailException(SQLException e) {
+	public SQLQueryFailException(Exception e) {
 		this.message = e.getMessage();
 	}
 	

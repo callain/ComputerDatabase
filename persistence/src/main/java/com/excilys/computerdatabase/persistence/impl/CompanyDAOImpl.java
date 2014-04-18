@@ -1,22 +1,19 @@
 package com.excilys.computerdatabase.persistence.impl;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.jdbc.datasource.DataSourceUtils;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.exception.SQLQueryFailException;
 import com.excilys.computerdatabase.persistence.CompanyDAO;
 import com.excilys.computerdatabase.persistence.ConnectionFactory;
+import com.excilys.computerdatabase.rowmapper.CompanyRowMapper;
 import com.jolbox.bonecp.BoneCPDataSource;
 
 @Repository
@@ -31,75 +28,42 @@ public class CompanyDAOImpl implements CompanyDAO
 	private BoneCPDataSource boneCP;
 	
 	@Override
-	public Company getCompany(int id)
+	public Company getCompany(int id) throws SQLQueryFailException
 	{
 		logger.debug("getCompany(" + id + ")");
 
-		Connection connection = DataSourceUtils.getConnection(boneCP);
+		JdbcTemplate jdbc = new JdbcTemplate(boneCP);
 		
-		PreparedStatement getCompany = null;
-		ResultSet rs = null;
-		Company p = null;
-
+		List<Company> companyList;
 		try
 		{
-			getCompany = connection.prepareStatement("SELECT * from company WHERE id = ?");
-			getCompany.setInt(1, id);
-			
-			rs = getCompany.executeQuery();
-			rs.next();
-			
-			p = new Company();
-			p.setId(rs.getInt("id"));
-			p.setName(rs.getString("name"));
-			
+			companyList = jdbc.query("SELECT * from company WHERE id = ?", new Object[] { id }, new CompanyRowMapper() );
 			logger.debug("getCompany(" + id + ") successful");
 		}
-		catch (SQLException e)
+		catch (DataAccessException e)
 		{
 			throw new SQLQueryFailException(e);
 		}
-		finally {
-			connectionFactory.closeObject(rs, getCompany);
-		}
-		return p;
+		if( !companyList.isEmpty() ) return companyList.get(0);
+		else return null;
 	}
 
 	@Override
-	public List<Company> getCompanies()
+	public List<Company> getCompanies()  throws SQLQueryFailException
 	{
 		logger.debug("getCompanies()");
 
-		Connection connection = DataSourceUtils.getConnection(boneCP);
+		JdbcTemplate jdbc = new JdbcTemplate(boneCP);
 
-		PreparedStatement getCompanies = null;
-		ResultSet rs = null;
-
-		List<Company> companies = new ArrayList<Company>();
+		List<Company> companies;
 		try
 		{
-			getCompanies = connection.prepareStatement("SELECT id, name FROM company ORDER BY company.name");
-
-			rs = getCompanies.executeQuery();
-			
-			while (rs.next())
-			{
-				Company p = new Company();
-				Integer id = rs.getInt("id");
-				p.setId(id);
-				p.setName(rs.getString("name"));
-				companies.add(p);
-			}
-
+			companies = jdbc.query("SELECT id, name FROM company ORDER BY company.name", new CompanyRowMapper());
 			logger.debug("getCompanies() successful");
 		}
-		catch (SQLException e)
+		catch (DataAccessException e)
 		{
 			throw new SQLQueryFailException(e);
-		}
-		finally
-		{
-			connectionFactory.closeObject(rs, getCompanies);
 		}
 		
 		return companies;

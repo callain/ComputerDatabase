@@ -17,8 +17,8 @@ import com.excilys.computerdatabase.service.ComputerService;
 import com.excilys.computerdatabase.wrapper.ComputerWrapper;
 
 @Service("computerService")
-public class ComputerServiceImpl implements ComputerService{
-
+public class ComputerServiceImpl implements ComputerService
+{
 	private static final Logger logger = LoggerFactory.getLogger(ComputerServiceImpl.class);
 	
 	@Autowired
@@ -59,6 +59,7 @@ public class ComputerServiceImpl implements ComputerService{
 	{
 		int computerUpdated = 0;
 		computerUpdated = computerDAO.updateComputer(c);
+		logDAO.addLog("Computer updated with id: " + c.getId());
 		
 		return computerUpdated;
 	}

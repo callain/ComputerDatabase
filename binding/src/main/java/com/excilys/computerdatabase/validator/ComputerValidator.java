@@ -18,7 +18,8 @@ public class ComputerValidator implements Validator<ComputerDto>
 			if( c.getIntroduced().matches(regexDate)) validation += "0";
 			else validation += "1";
 		}
-		else{
+		else
+		{
 			validation += "0";
 		}
 		
