@@ -12,9 +12,7 @@ import org.springframework.stereotype.Repository;
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.exception.SQLQueryFailException;
 import com.excilys.computerdatabase.persistence.CompanyDAO;
-import com.excilys.computerdatabase.persistence.ConnectionFactory;
 import com.excilys.computerdatabase.rowmapper.CompanyRowMapper;
-import com.jolbox.bonecp.BoneCPDataSource;
 
 @Repository
 public class CompanyDAOImpl implements CompanyDAO
@@ -22,18 +20,13 @@ public class CompanyDAOImpl implements CompanyDAO
 	private final static Logger logger = LoggerFactory.getLogger(CompanyDAOImpl.class);
 	
 	@Autowired
-	private ConnectionFactory connectionFactory;
-	
-	@Autowired
-	private BoneCPDataSource boneCP;
+	private JdbcTemplate jdbc;
 	
 	@Override
 	public Company getCompany(int id) throws SQLQueryFailException
 	{
 		logger.debug("getCompany(" + id + ")");
 
-		JdbcTemplate jdbc = new JdbcTemplate(boneCP);
-		
 		List<Company> companyList;
 		try
 		{
@@ -52,8 +45,6 @@ public class CompanyDAOImpl implements CompanyDAO
 	public List<Company> getCompanies()  throws SQLQueryFailException
 	{
 		logger.debug("getCompanies()");
-
-		JdbcTemplate jdbc = new JdbcTemplate(boneCP);
 
 		List<Company> companies;
 		try

@@ -3,6 +3,7 @@ package com.excilys.computerdatabase.dto;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotEmpty;
+import org.hibernate.validator.constraints.SafeHtml;
 
 import com.excilys.computerdatabase.annotation.Date;
 
@@ -12,6 +13,7 @@ public class ComputerDto
 	
 	@NotEmpty(message = "{NotEmpty.computerDto.name}")
 	@Size(min = 2, max = 255, message = "{Size.computerDto.name}")
+	@SafeHtml
 	private String name;
 	
 	@Date

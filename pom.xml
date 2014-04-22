@@ -15,9 +15,12 @@
 		<logback.version>1.1.1</logback.version>
 		<aspectj.version>1.5.4</aspectj.version>
 		<hibernate.validator.version>5.1.0.Final</hibernate.validator.version>
+		<hibernate.entity.manager.version>4.3.5.Final</hibernate.entity.manager.version>
 		<joda.time.version>2.3</joda.time.version>
 		<joda.time.tags.version>1.1.1</joda.time.tags.version>
 		<core.version>1.0</core.version>
+		<jsoup.version>1.7.3</jsoup.version>
+		<jcl.over.slf4j.version>1.7.7</jcl.over.slf4j.version>
 	</properties>
 
 	<dependencies>
@@ -26,16 +29,35 @@
 			<groupId>ch.qos.logback</groupId>
 			<artifactId>logback-classic</artifactId>
 			<version>${logback.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>org.slf4j</groupId>
+					<artifactId>slf4j-api</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>jcl-over-slf4j</artifactId>
+			<version>${jcl.over.slf4j.version}</version>
+			<scope>runtime</scope>
 		</dependency>
 	</dependencies>
-	
+
 	<dependencyManagement>
 		<dependencies>
+
 			<!-- BONECP -->
 			<dependency>
 				<groupId>com.jolbox</groupId>
 				<artifactId>bonecp</artifactId>
 				<version>${bonecp.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-api</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 
 			<!-- JSTL -->
@@ -50,6 +72,12 @@
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-web</artifactId>
 				<version>${spring.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>commons-logging</groupId>
+						<artifactId>commons-logging</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework</groupId>
@@ -69,11 +97,23 @@
 				<version>${aspectj.version}</version>
 			</dependency>
 
+			<!-- HIBERNATE ENTITY MANAGER -->
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-entitymanager</artifactId>
+				<version>${hibernate.entity.manager.version}</version>
+			</dependency>
+
 			<!-- HIBERNATE VALIDATOR -->
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-validator</artifactId>
 				<version>${hibernate.validator.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jsoup</groupId>
+				<artifactId>jsoup</artifactId>
+				<version>${jsoup.version}</version>
 			</dependency>
 
 			<!-- JODA TIME -->

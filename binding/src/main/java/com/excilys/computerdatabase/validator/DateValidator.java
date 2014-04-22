@@ -10,14 +10,14 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.context.support.ResourceBundleMessageSource;
 
 import com.excilys.computerdatabase.annotation.Date;
 
 public class DateValidator implements ConstraintValidator<Date, String>
 {
 	@Autowired
-    private ReloadableResourceBundleMessageSource messageSource;
+    private ResourceBundleMessageSource messageSource;
 	
 	@Override
 	public void initialize(Date date)

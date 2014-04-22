@@ -9,7 +9,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.persistence.ComputerField;
-import com.excilys.computerdatabase.persistence.ConnectionFactory;
 import com.excilys.computerdatabase.persistence.QueryBuilder;
 import com.excilys.computerdatabase.persistence.impl.ComputerDAOImpl;
 import com.excilys.computerdatabase.persistence.impl.LogDAOImpl;
@@ -27,14 +26,12 @@ public class ComputerServiceImpl implements ComputerService
 	@Autowired
 	private LogDAOImpl logDAO;
 	
-	@Autowired
-	private ConnectionFactory connectionFactory;
-
 	@Override
 	@Transactional(readOnly = true, propagation = Propagation.REQUIRES_NEW)
 	public Computer getComputer(int id)
 	{
 		logger.debug("ComputerServiceImpl.getComputer(" + id + ")");
+		
 		Computer c = null;
 		c = computerDAO.getComputer(id);
 		
@@ -45,6 +42,7 @@ public class ComputerServiceImpl implements ComputerService
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public int addComputer(Computer c)
 	{
+		logger.debug("ComputerServiceImpl.addComputer(" + c + ")");
 		int computerId = 0;
 		
 		computerId = computerDAO.addComputer(c);
@@ -57,7 +55,9 @@ public class ComputerServiceImpl implements ComputerService
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public int updateComputer(Computer c)
 	{
+		logger.debug("ComputerServiceImpl.updateComputer(" + c + ")");
 		int computerUpdated = 0;
+		
 		computerUpdated = computerDAO.updateComputer(c);
 		logDAO.addLog("Computer updated with id: " + c.getId());
 		
@@ -68,6 +68,7 @@ public class ComputerServiceImpl implements ComputerService
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
 	public boolean deleteComputer(int id)
 	{
+		logger.debug("ComputerServiceImpl.deleteComputer(" + id + ")");
 		boolean computerDeleted = false;
 		
 		computerDAO.deleteComputer(id);
@@ -80,6 +81,8 @@ public class ComputerServiceImpl implements ComputerService
 	@Transactional(readOnly = true, propagation = Propagation.REQUIRES_NEW)
 	public ComputerWrapper getComputers(QueryBuilder qb)
 	{
+		logger.debug("ComputerServiceImpl.getComputers(" + qb + ")");
+		
 		ComputerWrapper computerWrapper = null; 
 		String field;
 		ComputerField cf;

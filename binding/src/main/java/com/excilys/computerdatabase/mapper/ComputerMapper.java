@@ -7,7 +7,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.i18n.LocaleContextHolder;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Component;
 
 import com.excilys.computerdatabase.domain.Computer;
@@ -21,7 +21,7 @@ public class ComputerMapper
 	private CompanyService companyService;
 	
 	@Autowired
-    private ReloadableResourceBundleMessageSource messageSource;
+    private ResourceBundleMessageSource messageSource;
 	
 	public Computer fromDto(ComputerDto cDto)
 	{

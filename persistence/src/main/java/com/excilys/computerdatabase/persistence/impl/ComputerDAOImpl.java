@@ -23,10 +23,8 @@ import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.exception.SQLQueryFailException;
 import com.excilys.computerdatabase.persistence.ComputerDAO;
 import com.excilys.computerdatabase.persistence.ComputerField;
-import com.excilys.computerdatabase.persistence.ConnectionFactory;
 import com.excilys.computerdatabase.persistence.QueryBuilder;
 import com.excilys.computerdatabase.rowmapper.ComputerRowMapper;
-import com.jolbox.bonecp.BoneCPDataSource;
 
 @Repository
 public class ComputerDAOImpl implements ComputerDAO
@@ -34,16 +32,12 @@ public class ComputerDAOImpl implements ComputerDAO
 	private final Logger logger = LoggerFactory.getLogger(ComputerDAOImpl.class);
 	
 	@Autowired
-	private ConnectionFactory connectionFactory;
-	
-	@Autowired
-	private BoneCPDataSource boneCP;
+	private JdbcTemplate jdbc;
 	
 	@Override
 	public Computer getComputer(int id) throws SQLQueryFailException
 	{
 		logger.debug("getComputer(" + id + ")");
-		JdbcTemplate jdbc = new JdbcTemplate(boneCP);
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT computer.id, computer.name, computer.introduced, computer.discontinued, company.id, company.name ");
@@ -71,7 +65,6 @@ public class ComputerDAOImpl implements ComputerDAO
 	public List<Computer> getComputers(QueryBuilder qb) throws SQLQueryFailException
 	{
 		logger.debug("getComputers(" + qb + ")");
-		JdbcTemplate jdbc = new JdbcTemplate(boneCP);
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT computer.id, computer.name, computer.introduced, computer.discontinued, company.id, company.name ");
@@ -107,7 +100,6 @@ public class ComputerDAOImpl implements ComputerDAO
 	{
 		logger.debug("addComputer(" + c + ")");
 		
-		JdbcTemplate jdbc = new JdbcTemplate(boneCP);		
 		KeyHolder keyHolder = new GeneratedKeyHolder();
 		jdbc.update(new PreparedStatementCreator()
 		{
@@ -139,8 +131,6 @@ public class ComputerDAOImpl implements ComputerDAO
 	{
 		logger.debug("updateComputer(" + c + ")");
 
-		JdbcTemplate jdbc = new JdbcTemplate(boneCP);
-		
 		StringBuilder sb = new StringBuilder();
 		sb.append("UPDATE computer SET name = ?, introduced = ?, discontinued = ?, company_id = ? ");
 		sb.append("WHERE id = ? ");
@@ -172,7 +162,6 @@ public class ComputerDAOImpl implements ComputerDAO
 	public boolean deleteComputer(int id) throws SQLQueryFailException
 	{
 		logger.debug("deleteComputer(" + id + ")");
-		JdbcTemplate jdbc = new JdbcTemplate(boneCP);
 
 		StringBuilder sb = new StringBuilder();
 		sb.append("DELETE FROM computer ");
@@ -188,7 +177,6 @@ public class ComputerDAOImpl implements ComputerDAO
 	public int getTotalComputers(QueryBuilder qb) throws SQLQueryFailException
 	{
 		logger.debug("getTotalComputers(" + qb + ")");
-		JdbcTemplate jdbc = new JdbcTemplate(boneCP);
 		
 		StringBuilder sb = new StringBuilder();
 		sb.append("SELECT count(computer.id) ");

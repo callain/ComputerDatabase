@@ -24,6 +24,7 @@ public class CompanyServiceImpl implements CompanyService {
 	public Company getCompany(int id)
 	{
 		logger.debug("getCompany(" + id + ")");
+		
 		Company c = null;
 		c = companyDAO.getCompany(id);
 		
@@ -35,9 +36,10 @@ public class CompanyServiceImpl implements CompanyService {
 	public CompanyWrapper getCompanies()
 	{
 		logger.debug("getCompanies()");
-		CompanyWrapper computerWrapper = null;
-		computerWrapper = new CompanyWrapper(companyDAO.getCompanies());
 		
-		return computerWrapper;
+		CompanyWrapper companyWrapper = null;
+		companyWrapper = new CompanyWrapper(companyDAO.getCompanies());
+		
+		return companyWrapper;
 	}
 }
