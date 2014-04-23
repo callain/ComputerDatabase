@@ -15,12 +15,13 @@
 		<logback.version>1.1.1</logback.version>
 		<aspectj.version>1.5.4</aspectj.version>
 		<hibernate.validator.version>5.1.0.Final</hibernate.validator.version>
-		<hibernate.entity.manager.version>4.3.5.Final</hibernate.entity.manager.version>
 		<joda.time.version>2.3</joda.time.version>
 		<joda.time.tags.version>1.1.1</joda.time.tags.version>
 		<core.version>1.0</core.version>
 		<jsoup.version>1.7.3</jsoup.version>
 		<jcl.over.slf4j.version>1.7.7</jcl.over.slf4j.version>
+		<hibernate.core.version>4.3.5.Final</hibernate.core.version>
+		<jadira.version>2.0.1</jadira.version>
 	</properties>
 
 	<dependencies>
@@ -89,6 +90,11 @@
 				<artifactId>spring-jdbc</artifactId>
 				<version>${spring.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-orm</artifactId>
+				<version>${spring.version}</version>
+			</dependency>
 
 			<!-- ASPECT J -->
 			<dependency>
@@ -97,11 +103,16 @@
 				<version>${aspectj.version}</version>
 			</dependency>
 
-			<!-- HIBERNATE ENTITY MANAGER -->
 			<dependency>
 				<groupId>org.hibernate</groupId>
-				<artifactId>hibernate-entitymanager</artifactId>
-				<version>${hibernate.entity.manager.version}</version>
+				<artifactId>hibernate-core</artifactId>
+				<version>${hibernate.core.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>org.jboss.logging</groupId>
+						<artifactId>jboss-logging</artifactId>
+					</exclusion>
+				</exclusions>
 			</dependency>
 
 			<!-- HIBERNATE VALIDATOR -->
@@ -127,7 +138,12 @@
 				<artifactId>joda-time-jsptags</artifactId>
 				<version>${joda.time.tags.version}</version>
 			</dependency>
-
+			<dependency>
+				<groupId>org.jadira.usertype</groupId>
+				<artifactId>usertype.jodatime</artifactId>
+				<version>${jadira.version}</version>
+			</dependency>
+			
 			<!-- CORE -->
 			<dependency>
 				<groupId>com.excilys.computerdatabase</groupId>

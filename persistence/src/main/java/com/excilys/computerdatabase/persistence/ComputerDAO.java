@@ -10,6 +10,6 @@ public interface ComputerDAO {
 	public List<Computer> getComputers(QueryBuilder qb) throws SQLQueryFailException;
 	public int getTotalComputers(QueryBuilder qb) throws SQLQueryFailException;
 	public int addComputer(Computer c) throws SQLQueryFailException;
-	public int updateComputer(Computer c) throws SQLQueryFailException;
+	public void updateComputer(Computer c) throws SQLQueryFailException;
 	public boolean deleteComputer(int id) throws SQLQueryFailException;
 }

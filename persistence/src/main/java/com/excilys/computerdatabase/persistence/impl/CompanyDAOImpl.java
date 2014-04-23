@@ -2,17 +2,15 @@ package com.excilys.computerdatabase.persistence.impl;
 
 import java.util.List;
 
+import org.hibernate.SessionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.excilys.computerdatabase.domain.Company;
 import com.excilys.computerdatabase.exception.SQLQueryFailException;
 import com.excilys.computerdatabase.persistence.CompanyDAO;
-import com.excilys.computerdatabase.rowmapper.CompanyRowMapper;
 
 @Repository
 public class CompanyDAOImpl implements CompanyDAO
@@ -20,25 +18,17 @@ public class CompanyDAOImpl implements CompanyDAO
 	private final static Logger logger = LoggerFactory.getLogger(CompanyDAOImpl.class);
 	
 	@Autowired
-	private JdbcTemplate jdbc;
+	private SessionFactory sessionFactory;
 	
 	@Override
 	public Company getCompany(int id) throws SQLQueryFailException
 	{
 		logger.debug("getCompany(" + id + ")");
 
-		List<Company> companyList;
-		try
-		{
-			companyList = jdbc.query("SELECT * from company WHERE id = ?", new Object[] { id }, new CompanyRowMapper() );
-			logger.debug("getCompany(" + id + ") successful");
-		}
-		catch (DataAccessException e)
-		{
-			throw new SQLQueryFailException(e);
-		}
-		if( !companyList.isEmpty() ) return companyList.get(0);
-		else return null;
+		Company company = (Company) sessionFactory.getCurrentSession().get(Company.class, id);
+
+		logger.debug("getCompany(" + id + ") successful");
+		return company;
 	}
 
 	@Override
@@ -46,17 +36,9 @@ public class CompanyDAOImpl implements CompanyDAO
 	{
 		logger.debug("getCompanies()");
 
-		List<Company> companies;
-		try
-		{
-			companies = jdbc.query("SELECT id, name FROM company ORDER BY company.name", new CompanyRowMapper());
-			logger.debug("getCompanies() successful");
-		}
-		catch (DataAccessException e)
-		{
-			throw new SQLQueryFailException(e);
-		}
+		List<Company> companies = sessionFactory.getCurrentSession().createQuery("from Company").list();
 		
+		logger.debug("getCompanies() successful");
 		return companies;
 	}
 }

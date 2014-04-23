@@ -36,14 +36,18 @@ public class DashboardController
 		logger.debug("DashboardServlet.doGet()");
 		
 		// PAGINATION
-		if( page == null || page.isEmpty() ) {
+		if( page == null || page.isEmpty() )
+		{
 			currentPage = 1;
 		}
-		else {
-			try {
+		else
+		{
+			try
+			{
 				currentPage = Integer.parseInt(page);
 			}
-			catch(NumberFormatException e) {
+			catch(NumberFormatException e)
+			{
 				logger.warn("DashboardServlet.doGet() Invalid page number failed with : " + e.getMessage() );
 				currentPage = 1;
 			}

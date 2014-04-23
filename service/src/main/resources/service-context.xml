@@ -15,8 +15,8 @@
 	<import resource="classpath:persistence-context.xml" />
 
 	<!-- TRANSACTION MANAGER -->
-	<bean id="txManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
-		<property name="dataSource" ref="boneCP" />
+	<bean id="txManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
 	</bean>
 
 	<tx:annotation-driven transaction-manager="txManager" />

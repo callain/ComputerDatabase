@@ -53,15 +53,13 @@ public class ComputerServiceImpl implements ComputerService
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public int updateComputer(Computer c)
+	public void updateComputer(Computer c)
 	{
 		logger.debug("ComputerServiceImpl.updateComputer(" + c + ")");
-		int computerUpdated = 0;
 		
-		computerUpdated = computerDAO.updateComputer(c);
+		computerDAO.updateComputer(c);
+		
 		logDAO.addLog("Computer updated with id: " + c.getId());
-		
-		return computerUpdated;
 	}
 
 	@Override
@@ -110,6 +108,7 @@ public class ComputerServiceImpl implements ComputerService
 		computerWrapper = new ComputerWrapper(computerDAO.getComputers(qb));
 		
 		int results = computerDAO.getTotalComputers(qb);
+		computerWrapper.setSearch(qb.getSearch());
 		computerWrapper.setPages((int) Math.ceil((double) results / (double) qb.getNbRows()));
 		computerWrapper.setResults(results);
 		computerWrapper.setCurrentPage(qb.getCurrentPage());

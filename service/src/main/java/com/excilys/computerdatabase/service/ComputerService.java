@@ -9,7 +9,7 @@ public interface ComputerService {
 	public Computer getComputer(int id);
 	public ComputerWrapper getComputers(QueryBuilder qb);
 	public int addComputer(Computer c);
-	public int updateComputer(Computer c);
+	public void updateComputer(Computer c);
 	public boolean deleteComputer(int id);
 	public int getTotalComputers(QueryBuilder qb);
 }
