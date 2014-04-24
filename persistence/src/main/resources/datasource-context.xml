@@ -20,17 +20,13 @@
 		<property name="password" value="${jdbc.password}" />
 	</bean>
 
-	<!-- JDBCTEMPLATE -->
-	<bean id="jdbc" class="org.springframework.jdbc.core.JdbcTemplate">
-		<constructor-arg ref="boneCP" />
-	</bean>
-
 	<!-- HIBERNATE SESSION FACTORY -->
 	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
 		<property name="annotatedClasses">
 			<list>
 				<value>com.excilys.computerdatabase.domain.Computer</value>
 				<value>com.excilys.computerdatabase.domain.Company</value>
+				<value>com.excilys.computerdatabase.domain.Log</value>
 			</list>
 		</property>
 		<property name="dataSource">

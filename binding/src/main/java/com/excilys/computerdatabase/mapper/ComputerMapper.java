@@ -73,7 +73,7 @@ public class ComputerMapper
 		.name(c.getName())
 		.introduced((c.getIntroduced() != null)?dtf.print(c.getIntroduced()):null)
 		.discontinued((c.getDiscontinued() != null)?dtf.print(c.getDiscontinued()):null)
-		.companyId(c.getCompany().getId() + "")
+		.companyId((c.getCompany() != null)?c.getCompany().getId() + "":null)
 		.build();
 	}
 }

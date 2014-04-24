@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.excilys.computerdatabase.domain.Computer;
+import com.excilys.computerdatabase.domain.Log;
 import com.excilys.computerdatabase.persistence.ComputerField;
 import com.excilys.computerdatabase.persistence.QueryBuilder;
 import com.excilys.computerdatabase.persistence.impl.ComputerDAOImpl;
@@ -46,7 +47,7 @@ public class ComputerServiceImpl implements ComputerService
 		int computerId = 0;
 		
 		computerId = computerDAO.addComputer(c);
-		logDAO.addLog("Computer added with id: " + computerId);
+		logDAO.addLog(new Log("Computer added with id: " + computerId));
 
 		return computerId;
 	}
@@ -59,7 +60,7 @@ public class ComputerServiceImpl implements ComputerService
 		
 		computerDAO.updateComputer(c);
 		
-		logDAO.addLog("Computer updated with id: " + c.getId());
+		logDAO.addLog(new Log("Computer updated with id: " + c.getId()));
 	}
 
 	@Override
@@ -70,7 +71,7 @@ public class ComputerServiceImpl implements ComputerService
 		boolean computerDeleted = false;
 		
 		computerDAO.deleteComputer(id);
-		logDAO.addLog("Computer deleted with id: " + id);
+		logDAO.addLog(new Log("Computer deleted with id: " + id));
 		
 		return computerDeleted;
 	}
