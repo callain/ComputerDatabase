@@ -3,8 +3,13 @@ package com.excilys.computerdatabase.persistence.impl;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Restrictions;
+import org.hibernate.sql.JoinType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +18,6 @@ import org.springframework.stereotype.Repository;
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.exception.SQLQueryFailException;
 import com.excilys.computerdatabase.persistence.ComputerDAO;
-import com.excilys.computerdatabase.persistence.ComputerField;
 import com.excilys.computerdatabase.persistence.QueryBuilder;
 
 @Repository
@@ -40,20 +44,19 @@ public class ComputerDAOImpl implements ComputerDAO
 	{
 		logger.debug("getComputers(" + qb + ")");
 		
-		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT computer ");
-		sb.append("FROM Computer computer ");
-		sb.append("LEFT JOIN computer.company company ");
-		sb.append("WHERE computer.name LIKE :search OR company.name LIKE :search ");
-		
-		if( qb.getDirection() ) sb.append(String.format("ORDER BY %s DESC ", qb.getField()));
-		else sb.append(String.format("ORDER BY %s ", qb.getField()));
-		
 		List<Computer> computerList = new ArrayList<Computer>();
 		
 		String search = (qb.getSearch() == null)? "%%" : "%" + qb.getSearch() + "%";
-		Query query = sessionFactory.getCurrentSession().createQuery(sb.toString()).setString("search", search).setFirstResult(qb.getOffset()).setMaxResults(qb.getNbRows());
-		computerList = query.list();
+		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Computer.class, "computer")
+				.createAlias("company", "company", JoinType.LEFT_OUTER_JOIN )
+				.add(Restrictions.or(Restrictions.like("computer.name", search),Restrictions.like("company.name", search)))
+				.setFirstResult(qb.getOffset())
+				.setMaxResults(qb.getNbRows());
+		
+		if( qb.getDirection() ) criteria = criteria.addOrder(Order.desc(qb.getField()));
+		else criteria = criteria.addOrder(Order.asc(qb.getField()));
+
+		computerList = criteria.list();
 
 		logger.debug("getComputers() successful");
 		return computerList;
@@ -97,27 +100,12 @@ public class ComputerDAOImpl implements ComputerDAO
 	{
 		logger.debug("getTotalComputers(" + qb + ")");
 		
-		StringBuilder sb = new StringBuilder();
-		sb.append("SELECT count(*) ");
-		sb.append("FROM Computer computer ");
-		sb.append("LEFT JOIN computer.company company ");
-		sb.append("WHERE computer.name LIKE :search OR company.name LIKE :search ");
-		
-		String field = (qb.getField() == null)? ComputerField.NAME.getName() : qb.getField();
-		if( qb.getDirection() )
-		{
-			sb.append(String.format("ORDER BY %s DESC ", field));
-		}
-		else
-		{
-			sb.append(String.format("ORDER BY %s ", field));
-		}
-
 		String search = (qb.getSearch() == null)? "%%" : "%" + qb.getSearch() + "%";
+		int result = ((Number) sessionFactory.getCurrentSession().createCriteria(Computer.class, "computer")
+				.createAlias("company", "company", JoinType.LEFT_OUTER_JOIN )
+				.add(Restrictions.or(Restrictions.like("computer.name", search),Restrictions.like("company.name", search)))
+				.setProjection(Projections.rowCount()).uniqueResult()).intValue();
 		
-		Query query = sessionFactory.getCurrentSession().createQuery(sb.toString()).setString("search", search);
-		int result = ((Long) query.list().get(0)).intValue() ;
-
 		logger.debug("getTotalComputers() successful");
 		return result;
 	}

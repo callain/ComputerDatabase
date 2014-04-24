@@ -3,6 +3,7 @@ package com.excilys.computerdatabase.persistence.impl;
 import java.util.List;
 
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Order;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -36,7 +37,7 @@ public class CompanyDAOImpl implements CompanyDAO
 	{
 		logger.debug("getCompanies()");
 
-		List<Company> companies = sessionFactory.getCurrentSession().createQuery("from Company").list();
+		List<Company> companies = sessionFactory.getCurrentSession().createCriteria(Company.class).addOrder(Order.asc("name")).list();
 		
 		logger.debug("getCompanies() successful");
 		return companies;
