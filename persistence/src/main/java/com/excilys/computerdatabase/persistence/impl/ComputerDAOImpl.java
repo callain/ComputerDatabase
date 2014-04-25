@@ -41,17 +41,19 @@ public class ComputerDAOImpl implements ComputerDAO
 	{
 		logger.debug("getComputers(" + qb + ")");
 		
-		String search = (qb.getSearch() == null)? "%%" : "%" + qb.getSearch() + "%";
-
 		HibernateQuery query = new HibernateQuery(sessionFactory.getCurrentSession());
 		QComputer computer = QComputer.computer;
 		QCompany company = QCompany.company;
 		
-		query.from(computer)
-				.leftJoin(computer.company, company)
-				.where(computer.name.like(search).or(company.name.like(search)))
-				.offset(qb.getOffset())
-				.limit(qb.getNbRows());
+		query.from(computer).leftJoin(computer.company, company);
+		
+		if( qb.getSearch() != null )
+		{
+			String search = "%" + qb.getSearch() + "%"; 
+			query.where(computer.name.like(search).or(company.name.like(search)));
+		}
+			
+		query.offset(qb.getOffset()).limit(qb.getNbRows());
 		
 		switch(qb.getField())
 		{
@@ -124,16 +126,19 @@ public class ComputerDAOImpl implements ComputerDAO
 	{
 		logger.debug("getTotalComputers(" + qb + ")");
 
-		String search = (qb.getSearch() == null)? "%%" : "%" + qb.getSearch() + "%";
-
 		HibernateQuery query = new HibernateQuery(sessionFactory.getCurrentSession());
 		QComputer computer = QComputer.computer;
 		QCompany company = QCompany.company;
 		
-		Long result = query.from(computer)
-			.leftJoin(computer.company, company)
-			.where(computer.name.like(search).or(company.name.like(search)))
-			.count();
+		query.from(computer).leftJoin(computer.company, company);
+		
+		if( qb.getSearch() != null )
+		{
+			String search = "%" + qb.getSearch() + "%"; 
+			query.where(computer.name.like(search).or(company.name.like(search)));
+		}
+
+		Long result = query.count();
 
 		logger.debug("getTotalComputers() successful");
 		return result.intValue();
