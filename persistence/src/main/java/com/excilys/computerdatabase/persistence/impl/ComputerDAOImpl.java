@@ -1,24 +1,21 @@
 package com.excilys.computerdatabase.persistence.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
-import org.hibernate.sql.JoinType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.excilys.computerdatabase.domain.Computer;
+import com.excilys.computerdatabase.domain.QCompany;
+import com.excilys.computerdatabase.domain.QComputer;
 import com.excilys.computerdatabase.exception.SQLQueryFailException;
 import com.excilys.computerdatabase.persistence.ComputerDAO;
 import com.excilys.computerdatabase.persistence.QueryBuilder;
+import com.mysema.query.jpa.hibernate.HibernateQuery;
 
 @Repository
 public class ComputerDAOImpl implements ComputerDAO
@@ -44,19 +41,46 @@ public class ComputerDAOImpl implements ComputerDAO
 	{
 		logger.debug("getComputers(" + qb + ")");
 		
-		List<Computer> computerList = new ArrayList<Computer>();
-		
 		String search = (qb.getSearch() == null)? "%%" : "%" + qb.getSearch() + "%";
-		Criteria criteria = sessionFactory.getCurrentSession().createCriteria(Computer.class, "computer")
-				.createAlias("company", "company", JoinType.LEFT_OUTER_JOIN )
-				.add(Restrictions.or(Restrictions.like("computer.name", search),Restrictions.like("company.name", search)))
-				.setFirstResult(qb.getOffset())
-				.setMaxResults(qb.getNbRows());
-		
-		if( qb.getDirection() ) criteria = criteria.addOrder(Order.desc(qb.getField()));
-		else criteria = criteria.addOrder(Order.asc(qb.getField()));
 
-		computerList = criteria.list();
+		HibernateQuery query = new HibernateQuery(sessionFactory.getCurrentSession());
+		QComputer computer = QComputer.computer;
+		QCompany company = QCompany.company;
+		
+		query.from(computer)
+				.leftJoin(computer.company, company)
+				.where(computer.name.like(search).or(company.name.like(search)))
+				.offset(qb.getOffset())
+				.limit(qb.getNbRows());
+		
+		switch(qb.getField())
+		{
+			case "computer.name" :
+				if( qb.getDirection() ) query.orderBy(computer.name.desc());
+				else query.orderBy(computer.name.asc());
+				
+				break;
+			
+			case "computer.introduced" :
+				if( qb.getDirection() ) query.orderBy(computer.introduced.desc());
+				else query.orderBy(computer.introduced.asc());
+				
+				break;
+			
+			case "computer.discontinued" :
+				if( qb.getDirection() ) query.orderBy(computer.discontinued.desc());
+				else query.orderBy(computer.discontinued.asc());
+				
+				break;
+				
+			case "company.name" :
+				if( qb.getDirection() ) query.orderBy(computer.company.name.desc());
+				else query.orderBy(computer.company.name.asc());
+				
+				break;
+		}
+		
+		List<Computer> computerList = query.list(computer);
 
 		logger.debug("getComputers() successful");
 		return computerList;
@@ -99,14 +123,19 @@ public class ComputerDAOImpl implements ComputerDAO
 	public int getTotalComputers(QueryBuilder qb) throws SQLQueryFailException
 	{
 		logger.debug("getTotalComputers(" + qb + ")");
-		
+
 		String search = (qb.getSearch() == null)? "%%" : "%" + qb.getSearch() + "%";
-		int result = ((Number) sessionFactory.getCurrentSession().createCriteria(Computer.class, "computer")
-				.createAlias("company", "company", JoinType.LEFT_OUTER_JOIN )
-				.add(Restrictions.or(Restrictions.like("computer.name", search),Restrictions.like("company.name", search)))
-				.setProjection(Projections.rowCount()).uniqueResult()).intValue();
+
+		HibernateQuery query = new HibernateQuery(sessionFactory.getCurrentSession());
+		QComputer computer = QComputer.computer;
+		QCompany company = QCompany.company;
 		
+		Long result = query.from(computer)
+			.leftJoin(computer.company, company)
+			.where(computer.name.like(search).or(company.name.like(search)))
+			.count();
+
 		logger.debug("getTotalComputers() successful");
-		return result;
+		return result.intValue();
 	}
 }

@@ -20,8 +20,11 @@
 		<core.version>1.0</core.version>
 		<jsoup.version>1.7.3</jsoup.version>
 		<jcl.over.slf4j.version>1.7.7</jcl.over.slf4j.version>
+		<slf4j.log4j12.version>1.7.7</slf4j.log4j12.version>
 		<hibernate.core.version>4.3.5.Final</hibernate.core.version>
 		<jadira.version>2.0.1</jadira.version>
+		<querydsl.version>3.3.2</querydsl.version>
+		<querydsl.hql.version>1.9.7</querydsl.hql.version>
 	</properties>
 
 	<dependencies>
@@ -143,7 +146,35 @@
 				<artifactId>usertype.jodatime</artifactId>
 				<version>${jadira.version}</version>
 			</dependency>
-			
+
+			<!-- QUERYDSL -->
+			<dependency>
+				<groupId>com.mysema.querydsl</groupId>
+				<artifactId>querydsl-apt</artifactId>
+				<version>${querydsl.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.mysema.querydsl</groupId>
+				<artifactId>querydsl-jpa</artifactId>
+				<version>${querydsl.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>com.mysema.querydsl</groupId>
+				<artifactId>querydsl-hql</artifactId>
+				<version>${querydsl.hql.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>com.mysema.querydsl</groupId>
+						<artifactId>querydsl-core</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-log4j12</artifactId>
+				<version>${slf4j.log4j12.version}</version>
+			</dependency>
+
 			<!-- CORE -->
 			<dependency>
 				<groupId>com.excilys.computerdatabase</groupId>

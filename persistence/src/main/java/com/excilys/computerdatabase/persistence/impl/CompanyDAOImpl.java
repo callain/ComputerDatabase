@@ -3,15 +3,16 @@ package com.excilys.computerdatabase.persistence.impl;
 import java.util.List;
 
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.Order;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.excilys.computerdatabase.domain.Company;
+import com.excilys.computerdatabase.domain.QCompany;
 import com.excilys.computerdatabase.exception.SQLQueryFailException;
 import com.excilys.computerdatabase.persistence.CompanyDAO;
+import com.mysema.query.jpa.hibernate.HibernateQuery;
 
 @Repository
 public class CompanyDAOImpl implements CompanyDAO
@@ -37,7 +38,10 @@ public class CompanyDAOImpl implements CompanyDAO
 	{
 		logger.debug("getCompanies()");
 
-		List<Company> companies = sessionFactory.getCurrentSession().createCriteria(Company.class).addOrder(Order.asc("name")).list();
+		HibernateQuery query = new HibernateQuery(sessionFactory.getCurrentSession());
+		QCompany company = QCompany.company;
+		
+		List<Company> companies = query.from(company).orderBy(company.name.asc()).list(company);
 		
 		logger.debug("getCompanies() successful");
 		return companies;

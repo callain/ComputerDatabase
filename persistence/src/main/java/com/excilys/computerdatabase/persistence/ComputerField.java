@@ -1,6 +1,7 @@
 package com.excilys.computerdatabase.persistence;
 
-public enum ComputerField {
+public enum ComputerField
+{
 	ID("computer.id"),
 	NAME("computer.name"),
 	INTRODUCED("computer.introduced"),
@@ -9,15 +10,18 @@ public enum ComputerField {
 	
 	private String name;
 	
-	private ComputerField(String name) {
+	private ComputerField(String name)
+	{
 		this.name = name;
 	}
 
-	public String getName() {
+	public String getName()
+	{
 		return name;
 	}
 
-	public void setName(String name) {
+	public void setName(String name)
+	{
 		this.name = name;
 	}
 }
