@@ -108,7 +108,7 @@ public class ComputerServiceImpl implements ComputerService
 		
 		qb.setField(field);
 		PageRequest pageRequest = new PageRequest(qb.getCurrentPage() - 1, qb.getNbRows(), (qb.getDirection())?Direction.DESC:Direction.ASC, qb.getField());
-		Page<Computer> pageComputers = computerDAO.findByNameContainingOrCompanyName(qb.getSearch(), qb.getSearch(), pageRequest);
+		Page<Computer> pageComputers = computerDAO.findByNameContainingOrCompanyNameContaining(qb.getSearch(), qb.getSearch(), pageRequest);
 
 		int results = (int) pageComputers.getTotalElements();
 		

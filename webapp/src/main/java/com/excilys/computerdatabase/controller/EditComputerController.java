@@ -42,7 +42,7 @@ public class EditComputerController
 	private ComputerMapper computerMapper;
 
 	@RequestMapping(method = RequestMethod.GET)
-	public String doGet(@RequestParam("id") String id, HttpServletRequest req, HttpServletResponse resp, Model model) throws IOException
+	public String doGet(@RequestParam(value = "id", required = false) String id, HttpServletRequest req, HttpServletResponse resp, Model model) throws IOException
 	{
 		logger.debug("EditComputerServlet.doGet()");
 		
@@ -59,6 +59,10 @@ public class EditComputerController
 				logger.warn("EditComputerServlet invalid computer id failed with: " + e.getMessage());
 				return "forward:computers";
 			}
+		}
+		else
+		{
+			return "forward:computers";
 		}
 
 		if( computerId > 0)

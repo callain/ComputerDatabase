@@ -6,4 +6,8 @@
 
 	<!--  IMPORT -->
 	<import resource="classpath:binding-context.xml" />
+	
+		
+	<!--  WEB EXPRESSION HANDLER -->
+	<bean id="webexpressionHandler" class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler" />
 </beans>

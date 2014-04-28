@@ -4,6 +4,7 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 <%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <%@ taglib uri="http://www.joda.org/joda/time/tags" prefix="joda" %>
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec"%>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="tags"%>
 
 <section id="main">
@@ -38,7 +39,9 @@
 					<tags:boostrapPaginatorTag currentPage="${cw.currentPage}" totalPages="${cw.pages}" search="${cw.search}"  field="${cw.field}" isDesc="${cw.isDesc}"/>
 					<input type="search" id="searchbox" class="form-control" name="search" value="" placeholder="<spring:message code="search.name" />">
 					<button type="submit" id="searchsubmit" class="btn btn-primary"><spring:message code="filter.name" /></button>
-					<a class="btn btn-success" id="add" href="addComputer"  style="float: right;"><spring:message code="add.computer" /></a>
+					<sec:authorize access="hasRole('ROLE_ADMIN') and isAuthenticated()">
+						<a class="btn btn-success" id="add" href="addComputer"  style="float: right;"><spring:message code="add.computer" /></a>
+					</sec:authorize>
 				</div>
 			</form>
 		</div>
@@ -59,7 +62,9 @@
 						<td><joda:format value="${computer.introduced}" pattern="${datePattern}"/></td>
 						<td><joda:format value="${computer.discontinued}" pattern="${datePattern}"/></td>
 						<td>${computer.company.name}</td>
-						<td><a type="button" class="btn btn-danger" href="deleteComputer?id=${computer.id}"><span class="glyphicon glyphicon-trash"></span></a></td>
+						<sec:authorize access="hasRole('ROLE_ADMIN') and isAuthenticated()">
+							<td><a type="button" class="btn btn-danger" href="deleteComputer?id=${computer.id}"><span class="glyphicon glyphicon-trash"></span></a></td>
+						</sec:authorize>
 					</tr>
 				</c:forEach>
 			</tbody>

@@ -9,18 +9,18 @@
 	
 	<!--  IMPORT  -->
 	<import resource="classpath:service-context.xml"/>
-
-	<!--  MESSAGES  -->
+	
+	<!-- MESSAGES -->
 	<bean id="messageSource" class="org.springframework.context.support.ResourceBundleMessageSource">
 		<property name="basename" value="messages" />
 		<property name="defaultEncoding" value="UTF-8" />
 	</bean>
 
-	<!-- VALIDATOR  -->
+	<!-- VALIDATOR -->
 	<bean id="validator" class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean">
 		<property name="validationMessageSource" ref="messageSource" />
 	</bean>
-
+			
 	<!-- CONTEXT LOADING -->
 	<context:component-scan base-package="com.excilys.computerdatabase.mapper" />
 	<context:component-scan base-package="com.excilys.computerdatabase.validator" />

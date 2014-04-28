@@ -67,7 +67,7 @@
 				</div>
 			</tags:formdiv>
 			
-			<div class="actions">
+			<div class="col-xs-3">
 				<button type="submit" class="btn btn-primary"><spring:message code="add" /></button>
 				<a href="computers" class="btn btn-default"><spring:message code="cancel" /></a>
 			</div>

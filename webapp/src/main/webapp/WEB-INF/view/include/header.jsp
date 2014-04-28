@@ -1,4 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
+<%@ taglib uri="http://www.springframework.org/security/tags" prefix="sec"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -27,9 +29,13 @@
 	<header class="navbar">
 		<h1 class="fill">
 			<a href="/ComputerDatabase/computers"> Application - Computer Database </a>
+			<spring:message code="welcome" />${pageContext.request.userPrincipal.name}
+			<sec:authorize access="isAuthenticated()">
+				<a href="j_spring_security_logout" style="color: red;"><span class="glyphicon glyphicon-off"></span></a>
+			</sec:authorize>
 			<span style="float: right;">
-				<a href="computers?language=fr_FR" ><img src="/ComputerDatabase/resources/img/FR.gif" /></a>
-				<a href="computers?language=en_US" ><img src="/ComputerDatabase/resources/img/USA.png" /></a>
+				<a href="?language=fr_FR" ><img src="/ComputerDatabase/resources/img/FR.gif" /></a>
+				<a href="?language=en_US" ><img src="/ComputerDatabase/resources/img/USA.png" /></a>
 			</span>
 		</h1>
 	</header>
