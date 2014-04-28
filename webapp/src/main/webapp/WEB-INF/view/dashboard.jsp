@@ -35,7 +35,7 @@
 		<div>
 			<form action="computers" class="form-inline" method="GET">
 				<div style="width: 100%;">
-					<tags:boostrapPaginatorTag currentPage="${cw.currentPage}" totalPages="${cw.pages}" search="${cw.search}"  field="${cw.field}" isDesc="${cv.isDesc}"/>
+					<tags:boostrapPaginatorTag currentPage="${cw.currentPage}" totalPages="${cw.pages}" search="${cw.search}"  field="${cw.field}" isDesc="${cw.isDesc}"/>
 					<input type="search" id="searchbox" class="form-control" name="search" value="" placeholder="<spring:message code="search.name" />">
 					<button type="submit" id="searchsubmit" class="btn btn-primary"><spring:message code="filter.name" /></button>
 					<a class="btn btn-success" id="add" href="addComputer"  style="float: right;"><spring:message code="add.computer" /></a>
@@ -64,7 +64,7 @@
 				</c:forEach>
 			</tbody>
 		</table>
-		<tags:boostrapPaginatorTag currentPage="${cw.currentPage}" totalPages="${cw.pages}" search="${cw.search}" field="${cw.field}" isDesc="${cv.isDesc}"/>
+		<tags:boostrapPaginatorTag currentPage="${cw.currentPage}" totalPages="${cw.pages}" search="${cw.search}" field="${cw.field}" isDesc="${cw.isDesc}"/>
 	</div>
 </section>
 
