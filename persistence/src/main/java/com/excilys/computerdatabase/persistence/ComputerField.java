@@ -2,10 +2,10 @@ package com.excilys.computerdatabase.persistence;
 
 public enum ComputerField
 {
-	ID("computer.id"),
-	NAME("computer.name"),
-	INTRODUCED("computer.introduced"),
-	DISCONTINUED("computer.discontinued"),
+	ID("id"),
+	NAME("name"),
+	INTRODUCED("introduced"),
+	DISCONTINUED("discontinued"),
 	COMPANY_NAME("company.name");
 	
 	private String name;

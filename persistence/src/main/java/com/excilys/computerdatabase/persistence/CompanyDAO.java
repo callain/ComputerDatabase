@@ -1,11 +1,13 @@
 package com.excilys.computerdatabase.persistence;
 
-import java.sql.SQLException;
 import java.util.List;
+
+import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.CrudRepository;
 
 import com.excilys.computerdatabase.domain.Company;
 
-public interface CompanyDAO {
-	public Company getCompany(int id) throws SQLException;
-	public List<Company> getCompanies() throws SQLException;
+public interface CompanyDAO extends CrudRepository<Company,Integer>
+{
+	List<Company> findAll(Sort sort);
 }

@@ -1,13 +1,12 @@
 package com.excilys.computerdatabase.wrapper;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.persistence.ComputerField;
 
 public class ComputerWrapper {
-	private ArrayList<Computer> Computers;
+	private List<Computer> computers;
 	private int pages;
 	private int results;
 	private int currentPage;
@@ -20,17 +19,17 @@ public class ComputerWrapper {
 		setComputerFields(ComputerField.values());
 	}
 
-	public ComputerWrapper(List<Computer> Computers) {
+	public ComputerWrapper(List<Computer> computers) {
 		setComputerFields(ComputerField.values());
-		this.setComputers((ArrayList<Computer>) Computers);
+		this.setComputers(computers);
 	}
 
-	public ArrayList<Computer> getComputers() {
-		return Computers;
+	public List<Computer> getComputers() {
+		return computers;
 	}
 
-	public void setComputers(ArrayList<Computer> Computers) {
-		this.Computers = Computers;
+	public void setComputers(List<Computer> computers) {
+		this.computers = computers;
 	}
 
 	public int getPages() {

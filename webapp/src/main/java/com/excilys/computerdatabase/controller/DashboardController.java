@@ -54,7 +54,7 @@ public class DashboardController
 		}
 
 		QueryBuilder qb = new QueryBuilder();
-		qb.setSearch(search);
+		if( search != null ) qb.setSearch(search);
 		qb.setField(field);
 		qb.setOffset((currentPage - 1) * RESULTS_PER_PAGE);
 		qb.setNbRows(RESULTS_PER_PAGE);

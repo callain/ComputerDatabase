@@ -1,8 +1,10 @@
 package com.excilys.computerdatabase.persistence;
 
-import com.excilys.computerdatabase.domain.Log;
-import com.excilys.computerdatabase.exception.SQLQueryFailException;
+import org.springframework.data.repository.CrudRepository;
 
-public interface LogDAO {
-	public void addLog(Log log) throws SQLQueryFailException;
+import com.excilys.computerdatabase.domain.Log;
+
+public interface LogDAO extends CrudRepository<Log,Integer>
+{
+	
 }

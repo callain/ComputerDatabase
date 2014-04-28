@@ -16,23 +16,31 @@
 	</properties>
 
 	<dependencies>
+		<!--  CORE  -->
 		<dependency>
 			<groupId>com.excilys.computerdatabase</groupId>
 			<artifactId>core</artifactId>
 		</dependency>
+		
+		<!--  SERVICE  -->
 		<dependency>
 			<groupId>com.excilys.computerdatabase</groupId>
 			<artifactId>service</artifactId>
 		</dependency>
+		
+		<!--  HIBERNATE VALIDATOR  -->
 		<dependency>
 			<groupId>org.hibernate</groupId>
 			<artifactId>hibernate-validator</artifactId>
 		</dependency>
+		<!-- Needed for hibernate validator @SafeHtml annotation -->
 		<dependency>
 			<groupId>org.jsoup</groupId>
 			<artifactId>jsoup</artifactId>
 			<scope>runtime</scope>
 		</dependency>
+		
+		<!--  SPRING  -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>

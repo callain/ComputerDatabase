@@ -1,15 +1,12 @@
 package com.excilys.computerdatabase.persistence;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.CrudRepository;
 
 import com.excilys.computerdatabase.domain.Computer;
-import com.excilys.computerdatabase.exception.SQLQueryFailException;
 
-public interface ComputerDAO {
-	public Computer getComputer(int id) throws SQLQueryFailException;
-	public List<Computer> getComputers(QueryBuilder qb) throws SQLQueryFailException;
-	public int getTotalComputers(QueryBuilder qb) throws SQLQueryFailException;
-	public int addComputer(Computer c) throws SQLQueryFailException;
-	public void updateComputer(Computer c) throws SQLQueryFailException;
-	public boolean deleteComputer(int id) throws SQLQueryFailException;
+public interface ComputerDAO extends CrudRepository<Computer,Integer>
+{
+	Page<Computer> findByNameContainingOrCompanyName(String computerName, String companyName, Pageable pageable);
 }

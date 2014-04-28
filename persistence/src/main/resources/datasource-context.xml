@@ -19,24 +19,34 @@
 		<property name="username" value="${jdbc.username}" />
 		<property name="password" value="${jdbc.password}" />
 	</bean>
+	
+	<!-- SPRING ENTITY MANAGER -->
+    <bean id="entityManagerFactory" class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+        <property name="persistenceUnitName" value="computerDatabasePU"/>
+        <property name="dataSource" ref="boneCP"/>
+        <property name="packagesToScan" value="com.excilys.computerdatabase.domain"/>
+        <property name="jpaVendorAdapter">
+            <bean class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter"/>
+        </property>
+    </bean>
 
 	<!-- HIBERNATE SESSION FACTORY -->
-	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
-		<property name="annotatedClasses">
-			<list>
-				<value>com.excilys.computerdatabase.domain.Computer</value>
-				<value>com.excilys.computerdatabase.domain.Company</value>
-				<value>com.excilys.computerdatabase.domain.Log</value>
-			</list>
-		</property>
-		<property name="dataSource">
-			<ref bean="boneCP" />
-		</property>
-		<property name="hibernateProperties">
-			<props>
-				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop>
-				<prop key="hibernate.show_sql">true</prop>
-			</props>
-		</property>
-	</bean>
+<!-- 	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean"> -->
+<!-- 		<property name="annotatedClasses"> -->
+<!-- 			<list> -->
+<!-- 				<value>com.excilys.computerdatabase.domain.Computer</value> -->
+<!-- 				<value>com.excilys.computerdatabase.domain.Company</value> -->
+<!-- 				<value>com.excilys.computerdatabase.domain.Log</value> -->
+<!-- 			</list> -->
+<!-- 		</property> -->
+<!-- 		<property name="dataSource"> -->
+<!-- 			<ref bean="boneCP" /> -->
+<!-- 		</property> -->
+<!-- 		<property name="hibernateProperties"> -->
+<!-- 			<props> -->
+<!-- 				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect</prop> -->
+<!-- 				<prop key="hibernate.show_sql">true</prop> -->
+<!-- 			</props> -->
+<!-- 		</property> -->
+<!-- 	</bean> -->
 </beans>

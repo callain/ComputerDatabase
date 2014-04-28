@@ -3,16 +3,19 @@ package com.excilys.computerdatabase.service.impl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort.Direction;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.domain.Log;
+import com.excilys.computerdatabase.persistence.ComputerDAO;
 import com.excilys.computerdatabase.persistence.ComputerField;
+import com.excilys.computerdatabase.persistence.LogDAO;
 import com.excilys.computerdatabase.persistence.QueryBuilder;
-import com.excilys.computerdatabase.persistence.impl.ComputerDAOImpl;
-import com.excilys.computerdatabase.persistence.impl.LogDAOImpl;
 import com.excilys.computerdatabase.service.ComputerService;
 import com.excilys.computerdatabase.wrapper.ComputerWrapper;
 
@@ -22,10 +25,10 @@ public class ComputerServiceImpl implements ComputerService
 	private static final Logger logger = LoggerFactory.getLogger(ComputerServiceImpl.class);
 	
 	@Autowired
-	private ComputerDAOImpl computerDAO;
+	private ComputerDAO computerDAO;
 	
 	@Autowired
-	private LogDAOImpl logDAO;
+	private LogDAO logDAO;
 	
 	@Override
 	@Transactional(readOnly = true, propagation = Propagation.REQUIRES_NEW)
@@ -34,7 +37,7 @@ public class ComputerServiceImpl implements ComputerService
 		logger.debug("ComputerServiceImpl.getComputer(" + id + ")");
 		
 		Computer c = null;
-		c = computerDAO.getComputer(id);
+		c = computerDAO.findOne(id);
 		
 		return c;
 	}
@@ -46,10 +49,10 @@ public class ComputerServiceImpl implements ComputerService
 		logger.debug("ComputerServiceImpl.addComputer(" + c + ")");
 		int computerId = 0;
 		
-		computerId = computerDAO.addComputer(c);
-		logDAO.addLog(new Log("Computer added with id: " + computerId));
+		computerDAO.save(c);
+		logDAO.save(new Log("Computer added with id: " + computerId));
 
-		return computerId;
+		return c.getId();
 	}
 
 	@Override
@@ -58,22 +61,20 @@ public class ComputerServiceImpl implements ComputerService
 	{
 		logger.debug("ComputerServiceImpl.updateComputer(" + c + ")");
 		
-		computerDAO.updateComputer(c);
+		computerDAO.save(c);
 		
-		logDAO.addLog(new Log("Computer updated with id: " + c.getId()));
+		logDAO.save(new Log("Computer updated with id: " + c.getId()));
 	}
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRES_NEW)
-	public boolean deleteComputer(int id)
+	public void deleteComputer(int id)
 	{
 		logger.debug("ComputerServiceImpl.deleteComputer(" + id + ")");
-		boolean computerDeleted = false;
 		
-		computerDAO.deleteComputer(id);
-		logDAO.addLog(new Log("Computer deleted with id: " + id));
-		
-		return computerDeleted;
+		computerDAO.delete(id);
+
+		logDAO.save(new Log("Computer deleted with id: " + id));
 	}
 	
 	@Override
@@ -85,7 +86,7 @@ public class ComputerServiceImpl implements ComputerService
 		ComputerWrapper computerWrapper = null; 
 		String field;
 		ComputerField cf;
-		
+
 		try
 		{
 			if( qb.getField() != null )
@@ -106,9 +107,12 @@ public class ComputerServiceImpl implements ComputerService
 		}
 		
 		qb.setField(field);
-		computerWrapper = new ComputerWrapper(computerDAO.getComputers(qb));
+		PageRequest pageRequest = new PageRequest(qb.getCurrentPage() - 1, qb.getNbRows(), (qb.getDirection())?Direction.DESC:Direction.ASC, qb.getField());
+		Page<Computer> pageComputers = computerDAO.findByNameContainingOrCompanyName(qb.getSearch(), qb.getSearch(), pageRequest);
+
+		int results = (int) pageComputers.getTotalElements();
 		
-		int results = computerDAO.getTotalComputers(qb);
+		computerWrapper = new ComputerWrapper(pageComputers.getContent());
 		computerWrapper.setSearch(qb.getSearch());
 		computerWrapper.setPages((int) Math.ceil((double) results / (double) qb.getNbRows()));
 		computerWrapper.setResults(results);
@@ -117,15 +121,5 @@ public class ComputerServiceImpl implements ComputerService
 		computerWrapper.setDesc(qb.getDirection());
 		
 		return computerWrapper;
-	}
-
-	@Override
-	@Transactional(readOnly = true)
-	public int getTotalComputers(QueryBuilder qb)
-	{
-		int results = 0;
-		results = computerDAO.getTotalComputers(qb);
-		
-		return results;
 	}
 }

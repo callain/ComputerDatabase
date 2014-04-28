@@ -20,18 +20,29 @@
 	</properties>
 
 	<dependencies>
-		<dependency>
-			<groupId>org.hibernate</groupId>
-			<artifactId>hibernate-core</artifactId>
-		</dependency>
+		<!--  CORE -->
 		<dependency>
 			<groupId>com.excilys.computerdatabase</groupId>
 			<artifactId>core</artifactId>
 		</dependency>
+		
+		<!--  HIBERNATE -->
+		<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-core</artifactId>
+		</dependency>
+			<dependency>
+			<groupId>org.hibernate</groupId>
+			<artifactId>hibernate-entitymanager</artifactId>
+		</dependency>
+		
+		<!--  BONECP -->
 		<dependency>
 			<groupId>com.jolbox</groupId>
 			<artifactId>bonecp</artifactId>
 		</dependency>
+		
+		<!--  SPRING -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-web</artifactId>
@@ -45,20 +56,14 @@
 			<artifactId>spring-orm</artifactId>
 		</dependency>
 		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-jpa</artifactId>
+		</dependency>
+		
+		<!--  JODA TIME -->
+		<dependency>
 			<groupId>joda-time</groupId>
 			<artifactId>joda-time</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.mysema.querydsl</groupId>
-			<artifactId>querydsl-hql</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.mysema.querydsl</groupId>
-			<artifactId>querydsl-jpa</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.mysema.querydsl</groupId>
-			<artifactId>querydsl-apt</artifactId>
 		</dependency>
 	</dependencies>
 </project>
