@@ -17,14 +17,10 @@
 	
 	<authentication-manager>
 		<authentication-provider>
-<!-- 		<jdbc-user-service -->
-<!-- 		data-source-ref="dataSource"  -->
-<!-- 		users-by-username-query="select username,password from users where username=?" -->
-<!-- 		authorities-by-username-query="select username, role from user_roles where username =?  " /> -->
-			<user-service>
-				<user name="callain" password="osef" authorities="ROLE_ADMIN" />
-				<user name="callain2" password="osef" authorities="ROLE_USER" />
-			</user-service>
+		<jdbc-user-service
+			data-source-ref="boneCP"
+			users-by-username-query="select * from user where name=?"
+			authorities-by-username-query="select * from user_roles where username =?  " />
 		</authentication-provider>
 	</authentication-manager>
 </beans:beans>
