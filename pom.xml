@@ -4,7 +4,7 @@
 	<groupId>com.excilys.computerdatabase</groupId>
 	<artifactId>ComputerDatabase</artifactId>
 	<packaging>pom</packaging>
-	<version>2.2.0-RELEASE</version>
+	<version>3.7.0-RELEASE</version>
 	<name>ComputerDatabase Maven Webapp</name>
 
 	<properties>
