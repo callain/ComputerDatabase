@@ -1,5 +1,7 @@
 package com.excilys.computerdatabase.controller;
 
+import java.net.MalformedURLException;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
@@ -20,7 +22,7 @@ import com.excilys.computerdatabase.wrapper.ComputerWrapper;
 public class DashboardController
 {
 	private static final Logger logger = LoggerFactory.getLogger(DashboardController.class);
-
+	
 	@Autowired
 	private ComputerService computerService;
 	
@@ -31,7 +33,7 @@ public class DashboardController
 	@RequestMapping(method = RequestMethod.GET)
 	public String doGet (	@RequestParam(value = "page", required = false) String page, @RequestParam(value = "search", required = false) String search,
 							@RequestParam(value = "field", required = false) String field, @RequestParam(value = "isDesc", required = false) String isDesc,
-							HttpServletRequest req, HttpServletResponse resp )
+							HttpServletRequest req, HttpServletResponse resp ) throws MalformedURLException
 	{
 		logger.debug("DashboardServlet.doGet()");
 		
@@ -60,7 +62,7 @@ public class DashboardController
 		qb.setNbRows(RESULTS_PER_PAGE);
 		qb.setDirection(Boolean.parseBoolean(isDesc));
 		qb.setCurrentPage(currentPage);
-
+		
 		ComputerWrapper computerWrapper = computerService.getComputers(qb);
 		req.setAttribute("cw", computerWrapper);
 
@@ -68,7 +70,7 @@ public class DashboardController
 	}
 	
 	@RequestMapping(method = RequestMethod.POST)
-	public String doPost(HttpServletRequest req, HttpServletResponse resp)
+	public String doPost(HttpServletRequest req, HttpServletResponse resp) throws MalformedURLException
 	{
 		logger.debug("DashboardServlet.doPost()");
 		return this.doGet(null, null, null, null, req, resp);
