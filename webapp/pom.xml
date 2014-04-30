@@ -14,10 +14,6 @@
 	<dependencies>
 		<dependency>
 			<groupId>com.excilys.computerdatabase</groupId>
-			<artifactId>service</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>com.excilys.computerdatabase</groupId>
 			<artifactId>binding</artifactId>
 		</dependency>
 		<dependency>

@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.excilys.computerdatabase</groupId>
+		<artifactId>ComputerDatabase</artifactId>
+		<version>2.2.0-RELEASE</version>
+	</parent>
+	<artifactId>service-jax-ws</artifactId>
+	<packaging>war</packaging>
+	<name>service-jax-ws Maven Webapp</name>
+
+	<dependencies>
+	
+		<!-- BINDING -->
+		<dependency>
+			<groupId>com.excilys.computerdatabase</groupId>
+			<artifactId>binding</artifactId>
+		</dependency>
+
+		<!-- CXF -->
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-frontend-jaxws</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-transports-http</artifactId>
+		</dependency>
+		
+	</dependencies>
+
+	<build>
+		<finalName>service-jax-ws</finalName>
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.0</version>
+				<configuration>
+					<source>1.7</source>
+					<target>1.7</target>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>

@@ -1,27 +1,36 @@
 package com.excilys.computerdatabase.dto;
 
 import javax.validation.constraints.Size;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.hibernate.validator.constraints.NotEmpty;
 import org.hibernate.validator.constraints.SafeHtml;
 
 import com.excilys.computerdatabase.annotation.Date;
 
+@XmlRootElement
 public class ComputerDto
 {
+	@XmlAttribute
 	private String id;
 	
+	@XmlElement
 	@NotEmpty(message = "{NotEmpty.computerDto.name}")
 	@Size(min = 2, max = 255, message = "{Size.computerDto.name}")
 	@SafeHtml
 	private String name;
 	
+	@XmlElement
 	@Date
 	private String introduced;
 	
+	@XmlElement
 	@Date
 	private String discontinued;
 	
+	@XmlElement
 	private String companyId;
 	
 	public static class Builder {

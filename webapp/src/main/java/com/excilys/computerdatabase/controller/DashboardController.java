@@ -20,7 +20,7 @@ import com.excilys.computerdatabase.wrapper.ComputerWrapper;
 public class DashboardController
 {
 	private static final Logger logger = LoggerFactory.getLogger(DashboardController.class);
-	
+
 	@Autowired
 	private ComputerService computerService;
 	
