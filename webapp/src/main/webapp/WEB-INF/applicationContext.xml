@@ -9,4 +9,9 @@
 	
 	<!--  WEB EXPRESSION HANDLER -->
 	<bean id="webexpressionHandler" class="org.springframework.security.web.access.expression.DefaultWebSecurityExpressionHandler" />
+	
+	<!--  USER DETAIL SERVICE FOR SPRING SECURITY -->
+	<bean id="myUserDetailsService" class="org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl">
+		<property name="dataSource" ref="boneCP" />
+	</bean>
 </beans>
