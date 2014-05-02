@@ -2,17 +2,29 @@ package com.excilys.computerdatabase.wrapper;
 
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import com.excilys.computerdatabase.domain.Computer;
 import com.excilys.computerdatabase.persistence.ComputerField;
 
+@XmlRootElement
 public class ComputerWrapper {
+	
 	private List<Computer> computers;
+	
 	private int pages;
+	
 	private int results;
+	
 	private int currentPage;
+	
 	private boolean isDesc;
+	
 	private ComputerField[] computerFields;
+	
 	private String search;
+	
 	private ComputerField field;
 	
 	public ComputerWrapper() {
@@ -24,6 +36,7 @@ public class ComputerWrapper {
 		this.setComputers(computers);
 	}
 
+	@XmlElement(name = "computer")
 	public List<Computer> getComputers() {
 		return computers;
 	}

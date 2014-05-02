@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<project
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd"
+	xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+
+	<parent>
+		<groupId>com.excilys.computerdatabase</groupId>
+		<artifactId>ComputerDatabase</artifactId>
+		<version>3.7.0-RELEASE</version>
+	</parent>
+
+	<artifactId>service-jax-rs</artifactId>
+	<packaging>war</packaging>
+	<name>service-jax-rs Maven Webapp</name>
+
+	<dependencies>
+
+		<!-- BINDING -->
+		<dependency>
+			<groupId>com.excilys.computerdatabase</groupId>
+			<artifactId>binding</artifactId>
+		</dependency>
+
+		<!-- CXF -->
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-frontend-jaxrs</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.cxf</groupId>
+			<artifactId>cxf-rt-transports-http</artifactId>
+		</dependency>
+
+	</dependencies>
+
+	<build>
+		<finalName>service-jax-rs</finalName>
+	</build>
+</project>

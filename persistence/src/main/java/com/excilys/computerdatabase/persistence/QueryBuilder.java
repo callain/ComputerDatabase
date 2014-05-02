@@ -18,7 +18,7 @@ public class QueryBuilder {
 	
 	public QueryBuilder() {
 		offset = 0;
-		nbRows = 0;
+		nbRows = 50;
 		search = "";
 		field = "";
 		direction = false;
