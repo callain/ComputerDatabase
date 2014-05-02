@@ -10,18 +10,30 @@
 		<version>3.7.0-RELEASE</version>
 	</parent>
 
-	<artifactId>service-jax-rs</artifactId>
+	<artifactId>service-jackson</artifactId>
 	<packaging>war</packaging>
-	<name>service-jax-rs Maven Webapp</name>
+	<name>service-jackson Maven Webapp</name>
+	<url>http://maven.apache.org</url>
 
 	<dependencies>
-
 		<!-- BINDING -->
 		<dependency>
 			<groupId>com.excilys.computerdatabase</groupId>
 			<artifactId>binding</artifactId>
 		</dependency>
 
+		<!--  SPRING MVC -->
+		<dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-webmvc</artifactId>
+		</dependency>
+
+		<!-- JACKSON -->
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+		</dependency>
+		
 		<!-- CXF -->
 		<dependency>
 			<groupId>org.apache.cxf</groupId>
@@ -31,16 +43,8 @@
 			<groupId>org.apache.cxf</groupId>
 			<artifactId>cxf-rt-transports-http</artifactId>
 		</dependency>
-
-		<!-- JACKSON -->
-		<dependency>
-			<groupId>com.fasterxml.jackson.core</groupId>
-			<artifactId>jackson-databind</artifactId>
-		</dependency>
-
 	</dependencies>
-
 	<build>
-		<finalName>service-jax-rs</finalName>
+		<finalName>service-jackson</finalName>
 	</build>
 </project>
